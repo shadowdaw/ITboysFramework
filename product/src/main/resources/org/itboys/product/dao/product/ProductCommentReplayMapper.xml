@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductCommentReplayMapper">
+
+	<resultMap id="product_comment_replay_map" type="org.itboys.product.entity.mysql.product.ProductCommentReplay">
+		<result property="id" column="id" />
+		<result property="productId" column="product_id" />
+		<result property="commentId" column="comment_id" />
+		<result property="type" column="type" />
+		<result property="parentId" column="parent_id" />
+		<result property="status" column="status" />
+		<result property="containsForbiddenWords" column="contains_forbidden_words" />
+		<result property="replayTime" column="replay_time" />
+		<result property="replayer" column="replayer" />
+		<result property="content" column="content" />
+		<result property="tag" column="tag" />
+	</resultMap>
+	<sql id="allColumn">
+		product_id,comment_id,type,parent_id,status,contains_forbidden_words,replay_time,replayer,content,tag
+	</sql>
+	<insert id="batchInsert">
+		INSERT INTO
+		product_comment_replay(<include refid="allColumn"/>)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{productId},#{commentId},#{type},#{parentId},#{status},#{containsForbiddenWords},NOW(),#{replayer},#{content},#{tag})
+		</foreach>
+	</insert>
+
+	<select id="findById" parameterType="long" resultMap="product_comment_replay_map">
+		select
+		id,<include refid="allColumn"/> from product_comment_replay where
+		status=1 and id= #{id};
+	</select>
+	
+	<sql id="product_comment_replay_CONDITION">
+		from product_comment_replay where is_deleted=1
+		<if test="productId !=null">
+			<![CDATA[ and product_id = #{productId} ]]>
+		</if>
+		<if test="commentId !=null">
+			<![CDATA[ and comment_id = #{commentId} ]]>
+		</if>
+		<if test="status !=null">
+			<![CDATA[ and status = #{status} ]]>
+		</if>
+		<if test="type !=null">
+			<![CDATA[ and type = #{type} ]]>
+		</if>
+		<if test="parentId !=null">
+			<![CDATA[ and parent_id = #{parentId} ]]>
+		</if>
+	</sql>
+	
+	<select id="count" resultType="Integer">
+		select count(*) <include refid="product_comment_replay_CONDITION"/>
+	</select>
+	
+	<select id="list" resultMap="product_comment_replay_map"
+		parameterType="map">
+		SELECT id,<include refid="allColumn"/>
+		<include refid="product_comment_replay_CONDITION"/>
+		<if test="rowStart!=null  and pageSize!=null ">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+
+	<select id="findByCommentId" resultMap="product_comment_replay_map"
+		parameterType="long">
+		SELECT id,<include refid="allColumn"/> from `product_comment_replay` where status = 1 
+		and product_id = #{productId} 
+	</select>
+	<select id="findByParentId" resultMap="product_comment_replay_map"
+		parameterType="long">
+		SELECT id,<include refid="allColumn"/> from `product_comment_replay` where status = 1 
+			and parent_id = #{parentId}
+	</select>
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductCommentReplay">
+		insert into
+		product_comment_replay(<include refid="allColumn"/>)
+		values
+		(#{productId},#{commentId},#{type},#{parentId},#{status},#{containsForbiddenWords},NOW(),#{replayer},#{content},#{tag})
+		<selectKey keyProperty="id" resultType="long" order="AFTER">
+			select
+			last_insert_id();
+		</selectKey>
+	</insert>
+
+
+	<update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductCommentReplay">
+		update product_comment_replay set id = #{id}
+		<if test="productId !=null">
+			<![CDATA[ , product_id=#{productId} ]]>
+		</if>
+		<if test="content !=null">
+		<![CDATA[ , content=#{content} ]]>
+		</if>
+		<if test="tag !=null">
+		<![CDATA[ , tag=#{tag} ]]>
+		</if>
+		<if test="containsForbiddenWords!=null ">
+			<![CDATA[ ,contains_forbidden_words=#{containsForbiddenWords} ]]>
+		</if>
+		<if test="replayTime !=null ">
+			<![CDATA[ , replay_time=#{replayTime} ]]>
+		</if>
+		<if test="replayer !=null ">
+			<![CDATA[ , replayer=#{replayer} ]]>
+		</if>
+		where id=#{id} 
+	</update>
+
+	<delete id="delete" parameterType="long">
+		delete from product_comment_replay where id=#{id}
+	</delete>
+	
+</mapper>

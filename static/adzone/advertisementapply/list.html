@@ -1,0 +1,77 @@
+<div style="margin: 10px 0;"></div>
+<div id="advertisement_applySearchForm" style="padding: 5px; height: auto">
+	<div>
+		<form id="queryAdvertisementApplyForm">
+			申请人:<input class="easyui-validatebox" name="filter_S_name" style="width:100px">
+			<a href="javascript:doSearchObject('advertisementApplyTable','queryAdvertisementApplyForm')" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
+		</form>
+	</div>
+</div>
+
+<table id="advertisementApplyTable" style="width:1080px"></table>
+
+<div id="advertisementApplyDetail" class="easyui-window"  title="广告位申请" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:400px; height: 450px; padding: 10px;">
+</div>
+
+<script>
+	
+	$('#advertisementApplyTable').datagrid({
+		url:'/adzone/advertisementapply/list',
+		toolbar : '#advertisement_applySearchForm',
+		pagination:true,
+		singleSelect:true,
+		rownumbers:true,
+		columns : [[
+			{field : 'name',title : '申请人',width:200},
+			{field : 'phone',title : '联系电话',width:200},
+			{field : 'createTime',title : '申请时间',width:200},
+			{
+				field:'status',title:'信息状态',width:180,
+				formatter: function(value,row,index){
+					if(row.status==1){
+						return '待审核';
+					}else if(row.status==2){
+						return '审核通过';
+					}else if(row.status==3){
+						return '审核不通过';
+					}else{
+						return '已删除';
+					}		
+				}
+			},
+			{field : 'operate',title : '操作',width:200,
+				formatter : function(value, row, index) {
+					return outPutFunction("editAdvertisementApply",row.id,"查看")+outPutFunction("freezeAdzone",row.id,"删除");	
+				}
+			} 
+		]]
+	});
+
+	function editAdvertisementApply(uid) {
+		var adurl="/adzone/advertisementapply/getApply?id="+uid;
+		$("#advertisementApplyDetail").dialog({   
+			 closed: false,   
+			 cache: false,   
+			 title:"广告位申请管理",
+			 href: adurl,   
+		     width:500,
+			 modal: true  
+		});  
+	}
+
+	function freezeAdzone(uid) {
+		$.messager.confirm('广告位申请管理','确定要删除吗?',function(r){   
+		    if (r){   
+		    	jQuery.post("/adzone/advertisementapply/delete/"+uid,{}, function(data) {
+					if (data>=1) {
+						$("#advertisementApplyTable").datagrid('reload');
+					} else {
+						$.messager.alert('Info', "删除失败", 'info');
+					}
+				});
+		    }   
+		}); 
+	}
+
+</script>
+

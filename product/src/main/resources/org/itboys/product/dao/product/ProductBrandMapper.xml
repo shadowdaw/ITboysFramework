@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductBrandMapper">
+	
+	 <resultMap id="PRODUCT_BRAND_MAP" type="org.itboys.product.entity.mysql.product.ProductBrand">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="catId" column="cat_id" />
+		<result property="enName" column="en_name" />
+		<result property="logo" column="logo" />
+		<result property="title" column="title" />
+		<result property="isRecommend" column="is_recommend" />
+		<result property="bigLog" column="big_logo" />
+		<result property="mobileLogo" column="mobile_logo" />
+		<result property="mobiBigLogo" column="mobile_big_logo" />
+		<result property="descType" column="desc_type" />
+		<result property="descFlashUrl" column="desc_flash_url" />
+		<result property="desc" column="desc" />
+		<result property="simpleDesc" column="simple_desc" />
+		<result property="sellerId" column="seller_id" />
+	    <result property="createTime" column="create_time" />
+	    <result property="updater" column="updater" />
+	    <result property="updateTime" column="update_time" />
+	 </resultMap>
+	 
+	 <resultMap id="PRODUCT_BRAND_MAP_EXTEND"  type="org.itboys.product.entity.mysql.product.ProductBrand" extends="PRODUCT_BRAND_MAP"> 
+		<result property="desc" column="desc" />
+	 </resultMap>
+	 
+	 <sql id="PRODUCT_BRAND_FIELDS">
+	 	name,cat_id,en_name,logo,title,is_recommend,big_logo,mobile_logo,mobile_big_logo,desc_type,desc_flash_url,`simple_desc`,seller_id,creator,create_time,updater,update_time,`desc`
+	 </sql>
+	 
+	 <sql id="PRODUCT_BRAND_CONDITION">
+	 	from product_brand 
+	 	<where>
+			<if test="isRecommend !=null">
+				<![CDATA[ and is_recommend=#{isRecommend}]]>
+			</if>
+			<if test="catId !=null">
+				<![CDATA[ and cat_id=#{catId}]]>
+			</if>
+			<if test="sellerId !=null">
+				<![CDATA[ and seller_id=#{sellerId}]]>
+			</if>
+			<if test="name !=null and name !='' ">
+				<![CDATA[ and name like CONCAT('%',#{name},'%') ]]>
+			</if>
+			<if test="names !=null and names !='' ">
+				<![CDATA[ and name=#{names} ]]>
+			</if>
+			<if test="id !=null">
+				<![CDATA[ and id!=#{id}]]>
+			</if>
+		</where>
+	 </sql>
+	 
+	<select id="getBySellerIdPcId" resultMap="PRODUCT_BRAND_MAP">
+		select id,name from product_brand where id in(select brand_id from product_category_brand where brand_id in(select id from product_brand where seller_id=#{sellerId}) and cat_id=#{productCategoryId})
+	</select>
+	 
+	<select id="list"   resultMap="PRODUCT_BRAND_MAP">
+		select id,
+		<include refid="PRODUCT_BRAND_FIELDS" />
+		<include refid="PRODUCT_BRAND_CONDITION" />
+		<if test="rowStart !=null  and pageSize !=null ">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+	
+	<select id="count"   resultType="java.lang.Long">
+		select count(*)
+		<include refid="PRODUCT_BRAND_CONDITION" />
+	</select>
+	
+	<select id="allList" resultMap="PRODUCT_BRAND_MAP">
+		select id,<include refid="PRODUCT_BRAND_FIELDS" /> from product_brand 
+	</select>
+	
+	<select id="findById" parameterType="long"  resultMap="PRODUCT_BRAND_MAP_EXTEND">
+		select id,<include refid="PRODUCT_BRAND_FIELDS"/>
+		 from product_brand where id=#{id}
+	</select>
+	    
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductBrand" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		insert into product_brand(<include refid="PRODUCT_BRAND_FIELDS"/>) 
+		values(#{name},#{catId},#{enName},#{logo},#{title},#{isRecommend},#{bigLog},#{mobileLogo},#{mobiBigLogo},#{descType},#{descFlashUrl},#{simpleDesc},#{sellerId},#{creator},now(),#{updater},now(),#{desc})
+	</insert>
+	
+	<update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductBrand">
+		update product_brand set id=#{id} 
+		<if test="name !=null and name !=''">
+			<![CDATA[ , name=#{name}]]>
+		</if>
+		<if test="enName !=null and enName!='' ">
+			<![CDATA[ , en_name=#{enName}]]>
+		</if>
+		<if test="logo !=null and logo!='' ">
+			<![CDATA[ , logo=#{logo}]]>
+		</if>
+		<if test="title !=null and title!='' ">
+			<![CDATA[ , title=#{title}]]>
+		</if>
+		<if test="isRecommend !=null ">
+			<![CDATA[ , is_recommend=#{isRecommend}]]>
+		</if>
+		<if test="catId !=null ">
+			<![CDATA[ , cat_id=#{catId}]]>
+		</if>
+		<if test="bigLog !=null and bigLog!='' ">
+			<![CDATA[ , big_logo=#{bigLog}]]>
+		</if>
+		<if test="mobileLogo !=null and mobileLogo!='' ">
+			<![CDATA[ , mobile_logo=#{mobileLogo}]]>
+		</if>
+		<if test="mobiBigLogo !=null and mobiBigLogo!='' ">
+			<![CDATA[ , mobile_big_logo=#{mobiBigLogo}]]>
+		</if>
+		<if test="descType !=null ">
+			<![CDATA[ , desc_type=#{descType}]]>
+		</if>
+		<if test="descFlashUrl !=null and descFlashUrl!='' ">
+			<![CDATA[ , desc_flash_url=#{descFlashUrl}]]>
+		</if>
+		<if test="desc!=null and desc!='' ">
+			<![CDATA[ , `desc`=#{desc}]]>
+		</if>
+		<if test="simpleDesc !=null and simpleDesc!='' ">
+			<![CDATA[ , simple_desc=#{simpleDesc}]]>
+		</if>
+		<if test="sellerId !=null ">
+			<![CDATA[ , seller_id=#{sellerId}]]>
+		</if>
+		<if test="updater !=null ">
+			<![CDATA[ , updater=#{updater}]]>
+		</if>
+		<if test="updateTime !=null ">
+			<![CDATA[ , update_time=#{updateTime}]]>
+		</if>
+		where id=#{id} 
+	</update>
+	
+	<delete id="delete" parameterType="long">
+		delete from product_brand  where id=#{id} 
+	</delete>
+	
+	<delete id="deleteBySellerId" parameterType="long">
+	    delete from product_brand where seller_id=#{sellerId}
+	</delete>
+</mapper>

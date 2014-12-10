@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductExtMapper">
+	 
+	<select id="list" resultType="org.itboys.product.entity.mysql.product.ProductExt" parameterType="long">
+		SELECT product_id as productId,`key`,`value`		from   `product_ext` where `product_id` = #{productId}
+	</select>
+	
+	<insert id="insert" >
+		insert into product_ext(product_id,`key`,`value`) values
+		<foreach collection="list" item="item" separator=",">
+			(#{item.productId},#{item.key},#{item.value})
+		</foreach>
+   </insert>
+ 
+    <delete id="delete" parameterType="long" >
+	    delete from product_ext   where product_id=#{productId}
+   </delete>	
+   		  
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductTagMapper">
+
+	<sql id="SELECT_PRODUCTTAG_CONDITION">
+		from product_tag where 1=1
+		<if test="id!=null">
+			<![CDATA[ and id=#{id}]]>
+		</if>
+		<if test="ids !=null">
+				and  id in 
+     	  		<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+	            #{item}
+	        </foreach>
+		</if>
+		<if test="catId!=null">
+			<![CDATA[ and cat_id=#{catId}]]>
+		</if>
+		<if test="objId!=null">
+			<![CDATA[ and obj_id=#{objId}]]>
+		</if>
+		<if test="objtype!=null">
+			<![CDATA[ and obj_type=#{objType}]]>
+		</if>
+		<if test="name!=null and name!=''">
+			<![CDATA[ and name like CONCAT('%',#{name},'%')]]>
+		</if>
+	</sql>
+	
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductTag">
+		insert into product_tag(cat_id,obj_id,obj_type,name,`desc`,fied1,fied2,create_time,creator,update_time,updater)
+		 values(#{catId},#{objId},#{objType},#{name},#{desc},#{fied1},#{fied2},now(),#{creator},now(),#{updater})
+		<selectKey keyProperty="id" order="AFTER" resultType="long">
+			SELECT LAST_INSERT_ID();
+		</selectKey>
+	</insert>
+	
+	<select id="list" resultType="org.itboys.product.entity.mysql.product.ProductTag">
+		select id,cat_id as catId,obj_id as objId,obj_type as objType,fied1,fied2,name,`desc`,creator,create_time as createTime,updater,update_time as updateTime
+		<include refid="SELECT_PRODUCTTAG_CONDITION"/>
+		<if test="orderByKey == null or orderByKey ==''">
+			<![CDATA[  order by id ]]>
+		</if>
+	    <if test="orderByKey != null and orderByKey != ''">
+			<![CDATA[  order by ${orderByKey} ]]>
+		</if>
+		<if test="rowStart!=null and pageSize!=null">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+	
+	<select id="count" resultType="long">
+		select count(*)
+		<include refid="SELECT_PRODUCTTAG_CONDITION"/>
+	</select>
+	
+	<update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductTag">
+		update product_tag set id=#{id},update_time=now()
+		<if test="name !=null and name!=''">
+			<![CDATA[ , name=#{name}]]>
+		</if>
+		<if test="catId!=null">
+			<![CDATA[ , cat_id=#{catId}]]>
+		</if>
+		<if test="objId!=null">
+			<![CDATA[ , obj_id=#{objId}]]>
+		</if>
+		<if test="objType !=null">
+			<![CDATA[ , obj_type=#{objType}]]>
+		</if>
+		<if test="fied1!=null and fied1!=''">
+			<![CDATA[ , `fied1`=#{fied1}]]>
+		</if>
+		<if test="fied2!=null and fied2!=''">
+			<![CDATA[ , `fied2`=#{fied2}]]>
+		</if>
+		<if test="desc !=null and desc!=''">
+			<![CDATA[ , `desc`=#{desc}]]>
+		</if>
+		<if test="updater!=null ">
+			<![CDATA[ , updater=#{updater}]]>
+		</if>
+		where id=#{id}
+	</update>
+	
+	<delete id="delete"  parameterType="long">
+		delete from product_tag where id=#{id}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.order.ReceiveAddressMapper">
+	
+     <!--  订单基本信息resultMap  -->
+	<resultMap id="ReceiveAddressMap" type="org.itboys.product.entity.mysql.ReceiveAddress">
+		<result property="id" column="id" />
+		<result property="memberId" column="member_id" />
+		<result property="provinceId" column="province_id" />
+		<result property="districtId" column="district_id" />
+ 		<result property="cityId" column="city_id" />
+		<result property="areaId" column="area_id" />
+		<result property="name" column="name" />
+		<result property="mobile" column="mobile" />
+		<result property="telephone" column="telephone" />
+		<result property="address" column="address" />
+		<result property="isDelete" column="is_delete" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+	 </resultMap>
+	
+
+  	
+  	 <select id="getAddress" resultMap="ReceiveAddressMap" parameterType="long">
+
+		select id,province_id,district_id,city_id,area_id,name,mobile,telephone,address,is_delete,create_time,update_time from receive_address 
+		where member_id=#{id} and is_delete = 1
+
+	</select>
+	
+	<select id="getReceiveAddressById" resultMap="ReceiveAddressMap" parameterType="long">
+		select id,member_id,province_id,district_id,city_id,area_id,name,mobile,telephone,address,is_delete,create_time,update_time from receive_address 
+		where id=#{id}
+	</select>
+	
+	
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.ReceiveAddress"  useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+       INSERT INTO receive_address(member_id,province_id,district_id,city_id,area_id,name,mobile,telephone,address,is_delete,create_time,update_time)
+        VALUES (#{memberId}, #{provinceId}, #{districtId}, #{cityId}, #{areaId},#{name},#{mobile},#{telephone}, #{address},1,now(),now()) 
+        <selectKey keyProperty="id" resultType="int" order="AFTER">  
+            SELECT LAST_INSERT_ID();  
+         </selectKey>     
+     </insert> 
+     
+      <update id="update" parameterType="org.itboys.product.entity.mysql.ReceiveAddress" >
+	    UPDATE receive_address  set  update_time = now()
+	     <if test="memberId !=null ">
+			<![CDATA[ , member_id=#{memberId} ]]>
+		 </if>
+		 <if test="provinceId !=null ">
+			<![CDATA[ , province_id=#{provinceId} ]]>
+		 </if>
+		  <if test="districtId!=null ">
+			<![CDATA[ , district_id=#{districtId} ]]>
+		 </if>
+		 <if test="cityId!=null">
+		 	<![CDATA[ ,city_id=#{cityId} ]]>
+		 </if>
+		 <if test="areaId!=null">
+		 	<![CDATA[ ,area_id=#{areaId} ]]>
+		 </if>
+		 <if test="name!=null and name!=''">
+		 	<![CDATA[ ,name=#{name} ]]>
+		 </if>
+		 <if test="mobile!=null and mobile!=''">
+		 	<![CDATA[ ,mobile=#{mobile} ]]>
+		 </if>
+		 <if test="telephone!=null and telephone!=''">
+		 	<![CDATA[ ,telephone=#{telephone} ]]>
+		 </if>
+		 <if test="address!=null and address!=''">
+		 	<![CDATA[ ,address=#{address} ]]>
+		 </if>
+	     WHERE ID = #{id}  
+	  </update> 
+	  
+	  
+	  <update id="delete" parameterType="java.lang.Integer" >
+	    UPDATE receive_address  set  is_delete = 0
+	   where id=#{id}	    
+	   </update>
+	   
+	   <select id="getByIds" resultMap="ReceiveAddressMap">
+	   	select id,member_id,province_id,district_id,city_id,area_id,name,mobile,telephone,address,is_delete,create_time,update_time from receive_address where id in 
+	   	<foreach item="item" index="index" collection="list" 
+                    open="(" separator="," close=")">
+                   #{item}
+	  	</foreach>
+	   </select>
+</mapper>

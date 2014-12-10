@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductCountMapper">
+	 
+	<resultMap id="ProductCountRM" type="org.itboys.product.entity.mysql.product.ProductCount">
+		<result property="productId" column="product_id" />
+		<result property="buyedCount" column="buyed_count" />
+		<result property="collectCount" column="collect_count" />
+		<result property="viewCount" column="view_count" />
+		<result property="commentCount" column="comment_count" />
+		<result property="goodCommentCount" column="good_comment_count" />
+		<result property="middleCommentCount" column="middle_comment_count" />
+		<result property="badCommentCount" column="bad_comment_count" />
+		<result property="productStore" column="product_store" />
+	</resultMap>
+
+	<sql id="PRODUCT_EXTEND_FIELDS">
+		product_id,product_store,buyed_count,collect_count,view_count,comment_count,good_comment_count
+		,middle_comment_count,bad_comment_count
+	</sql>
+	
+	<select id="getAllOrderByBuyed">
+		select <include refid="PRODUCT_EXTEND_FIELDS" />
+		from `product_count` order by buyed_count
+	</select>
+	
+	<update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductCount">
+		update product_count set product_id=#{productId} 
+		<if test="buyedCount !=null" >
+			<![CDATA[ , buyed_count=#{buyedCount} ]]>
+		</if>
+		<if test="viewCount !=null" >
+			<![CDATA[ , view_count=#{viewCount} ]]>
+		</if>
+		where product_id=#{productId}
+	</update>
+
+	<select id="findByProductId" resultMap="ProductCountRM" parameterType="long">
+		SELECT
+		<include refid="PRODUCT_EXTEND_FIELDS" />
+		from `product_count` where `product_id` = #{productId}
+	</select>
+	
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductCount">
+       INSERT INTO product_count(<include refid="PRODUCT_EXTEND_FIELDS"/>)
+        VALUES (#{productId},0,0,0,0,0,0,0,0)
+   </insert>
+
+   <update id="addBuyedCount" parameterType="long" >
+	    UPDATE product_count  set buyed_count=buyed_count+#{buyedCount} where product_id=#{productId}
+   </update>	
+   
+   <update id="addCommentCount" parameterType="long" >
+	    UPDATE product_count  set comment_count=comment_count+1 where product_id=#{productId}
+   </update>
+   
+   <update id="updateCommentCount" parameterType="long">
+   		update product_count set comment_count=comment_count+#{commentCount} where product_id=#{productId}
+   </update>
+   
+   <update id="upGoodCommentCount" parameterType="long">
+      	update product_count set good_comment_count=good_comment_count+#{goodCommentCount} where product_id=#{productId}
+   </update>
+   
+     <update id="upMiddleCommentCount" parameterType="long">
+      	update product_count set middle_comment_count=middle_comment_count+#{middleCommentCount} where product_id=#{productId}
+   </update>
+   
+     <update id="upBadCommentCount" parameterType="long">
+      	update product_count set bad_comment_count=bad_comment_count+#{badCommentCount} where product_id=#{productId}
+   </update>
+   
+   <update id="addViewCount" parameterType="long" >
+	    UPDATE product_count  set view_count=view_count+1 where product_id=#{productId}
+   </update>
+   
+    <update id="addCollectCount" parameterType="long" >
+	    UPDATE product_count  set collect_count=collect_count+1 where product_id=#{productId}
+   </update>
+   
+    <update id="addGoodCommentCount" parameterType="long" >
+	    UPDATE product_count  set good_comment_count=good_comment_count+1 where product_id=#{productId}
+   </update>	
+   
+    <update id="addMiddleCommentCount" parameterType="long" >
+	    UPDATE product_count  set middle_comment_count=middle_comment_count+1 where product_id=#{productId}
+   </update>	
+   
+    <update id="addBadCommentCount" parameterType="long" >
+	    UPDATE product_count  set bad_comment_count=bad_comment_count+1 where product_id=#{productId}
+   </update>	
+    <update id="downProductStore">
+	    UPDATE product_count  set product_store=product_store-#{num} where product_id=#{productId}
+   </update>
+    <delete id="deleteByProductId" parameterType="long" >
+	    delete from product_count   where product_id=#{productId}
+   </delete>
+   <select id="getSecKissProductList" resultMap="ProductCountRM">
+   		SELECT
+		<include refid="PRODUCT_EXTEND_FIELDS" />
+		 from `product_count` where product_id in(select t.product_id from type t where t.sec_kill=1 and to_days(t.start_time) <![CDATA[ <= ]]> to_days(now()) and to_days(t.end_time) <![CDATA[ >= ]]> to_days(now()))
+   </select>	
+   
+   <select id="getBuyedList" resultMap="ProductCountRM">
+   	select 
+   	<include refid="PRODUCT_EXTEND_FIELDS" />
+	 from `product_count` where product_id in(select product_id from team_buy where to_days(start_time) <![CDATA[ <= ]]> to_days(now()) and to_days(end_time) <![CDATA[ >= ]]> to_days(now()))
+   </select>
+   
+   <select id="getAll" resultMap="ProductCountRM">
+   	select id,product_id,buyed_count from product_count 
+   </select>
+   
+   <select id="getBuyedListByids" resultMap="ProductCountRM">
+   	select product_id,buyed_count from product_count where product_id in(select id from product where cat_id in <foreach item="item" index="index" collection="list" open="(" separator="," close=")">#{item}</foreach>)
+   </select>
+   		  
+</mapper>

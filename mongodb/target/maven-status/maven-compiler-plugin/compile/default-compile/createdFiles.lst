@@ -1,0 +1,16 @@
+org\itboys\mongodb\core\MongoDBClientFactoryBean.class
+org\itboys\mongodb\core\BaseMorphiaMapper.class
+org\itboys\mongodb\entity\BaseLongIdEntity.class
+org\itboys\mongodb\utils\query\PageQueryUtils.class
+org\itboys\mongodb\entity\BaseEntity.class
+org\itboys\mongodb\service\IDGeneratorService.class
+org\itboys\mongodb\core\MorphiaEntities.class
+org\itboys\mongodb\entity\BaseObjectIdEntity.class
+org\itboys\mongodb\utils\query\QueryParamUtils.class
+org\itboys\mongodb\service\BaseService.class
+org\itboys\mongodb\utils\page\PageQueryParam.class
+org\itboys\mongodb\core\MongoDataSourceFactoryBean.class
+org\itboys\mongodb\utils\page\Page.class
+org\itboys\mongodb\entity\EntityIdDB.class
+org\itboys\mongodb\core\MongoDataSource$1.class
+org\itboys\mongodb\core\MongoDataSource.class

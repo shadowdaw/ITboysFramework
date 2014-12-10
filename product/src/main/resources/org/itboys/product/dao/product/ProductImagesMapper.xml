@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductImagesMapper">
+	 
+	 <sql id="PRODUCT_IMAGES_CONDITION">
+	 	from `product_images` where 1=1
+	 	<if test="productId!=null">
+			<![CDATA[ and product_id=#{productId}]]>
+		</if>
+	 </sql>
+	 
+	<select id="findByProductId" resultType="org.itboys.product.entity.mysql.product.ProductImages" parameterType="map">
+		SELECT id,product_id as productId,img_path as imgPath
+		from `product_images` where product_id=#{productId} order by id desc
+		<if test="rowStart!=null  and pageSize!=null ">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+	
+	<select id="list" resultType="org.itboys.product.entity.mysql.product.ProductImages" parameterType="map">
+		select id,product_id as productId,img_path as imgPath
+		<include refid="PRODUCT_IMAGES_CONDITION"/>
+		order by id desc
+		<if test="rowStart!=null  and pageSize!=null ">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+	
+	<select id="count" resultType="long" >
+		select count(*)
+		<include refid="PRODUCT_IMAGES_CONDITION"/>
+	</select>
+	
+   <insert id="batchInsert">
+       INSERT INTO product_images(product_id,`img_path`)  VALUES 
+        <foreach collection="list" item="item" index="index"  separator=",">
+    		 ( #{item.productId}, #{item.imgPath})
+    	</foreach>
+    </insert>
+	
+    <delete id="deleteByProductId" parameterType="long" >
+	    delete from product_images  where product_id=#{productId}
+   </delete>	
+   
+   <delete id="delete" parameterType="long" >
+	    delete from product_images  where id=#{id}
+   </delete>
+   		  
+</mapper>

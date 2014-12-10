@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductDetailsMapper">
+
+	<select id="getListByProductid" resultType="org.itboys.product.entity.mysql.product.ProductDetails" parameterType="long">
+		select id,product_id as productId,detail1,detail2,detail3,`bianma`,`tiaoxingma`,`price`,count,is_deleted as isDeleted,
+		detail_name1 as detailName1,detail_name2 as detailName2,detail_name3 as detailName3 
+		from `product_details` where `product_id` = #{productId} and is_deleted=1
+	</select>
+	
+	<select id="getById" resultType="org.itboys.product.entity.mysql.product.ProductDetails" parameterType="long">
+		select  id,product_id as productId,detail1,detail2,detail3,`bianma`,`tiaoxingma`,`price`,count,is_deleted as isDeleted,
+		detail_name1 as detailName1,detail_name2 as detailName2,detail_name3 as detailName3 from `product_details` 
+		where `id` = #{id}
+	</select>
+   
+   <insert id="batchInsert">
+       INSERT INTO product_details(product_id,detail1,detail2,detail3,`bianma`,`tiaoxingma`,`price`,count,is_deleted,detail_name1,detail_name2,detail_name3) values
+       <foreach collection="list" item="item" index="index"  separator=",">
+    		 ( #{item.productId}, #{item.detail1},#{item.detail2},#{item.detail3},#{item.bianma},#{item.tiaoxingma},#{item.price},#{item.count},1,#{item.detailName1},#{item.detailName2},#{item.detailName3})
+    	</foreach>
+    </insert>
+    
+   <insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductDetails" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+       insert into product_details(product_id,detail1,detail2,detail3,`bianma`,`tiaoxingma`,`price`,`count`,is_deleted,detail_name1,detail_name2,detail_name3) 
+       values(#{productId},#{detail1},#{detail2},#{detail3},#{bianma},#{tiaoxingma},#{price},#{count},1,#{detailName1},#{detailName2},#{detailName3})
+   </insert>
+	
+    <update id="deleteByProductId" parameterType="long" >
+	    update product_details set is_deleted=0 where product_id=#{productId}
+   </update>
+   
+   <select id="getAll" resultType="org.itboys.product.entity.mysql.product.ProductDetails">
+   		select product_id as productId,detail1,detail2,detail3,`bianma`,`tiaoxingma`,`price`,count,is_deleted as isDeleted,
+   		detail_name1 as detailName1,detail_name2 as detailName2,detail_name3 as detailName3 from product_details 
+   		where is_deleted=1
+   </select>
+   
+   <select id="catList" resultType="org.itboys.product.entity.mysql.product.ProductDetails">
+   	    select id,product_id as productId,detail1,detail2,detail3,`bianma`,`tiaoxingma`,`price`,count,is_deleted as isDeleted,
+   		detail_name1 as detailName1,detail_name2 as detailName2,detail_name3 as detailName3 from product_details 
+   		where is_deleted=1 and product_id in(select id from product where cat_id in<foreach item="item" index="index" collection="list" open="(" separator="," close=")">#{item}</foreach>)
+   </select>
+   
+   <update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductDetails">
+		update product_details set id=#{id}
+		<if test="count!=null">
+			<![CDATA[ , count=#{count} ]]>
+		</if>
+		where id=#{id} 
+	</update>
+	
+	<select id="getList" resultType="org.itboys.product.entity.mysql.product.ProductDetails">
+	    select id,product_id as productId,detail1,detail2,detail3,`bianma`,`tiaoxingma`,`price`,count,is_deleted as isDeleted,
+   		detail_name1 as detailName1,detail_name2 as detailName2,detail_name3 as detailName3 from product_details 
+   		where is_deleted=1
+		<if test="ids!=null">
+			and id in 
+			<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+			  
+</mapper>

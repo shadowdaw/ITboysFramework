@@ -1,0 +1,131 @@
+<ion-view  >
+  <ion-content >
+  <div class="bar bar-header  bar-clear">
+           <button class="button button-clear" ng-click="closedetails()" >
+           <i class="icon ion-chevron-left"></i>
+        </button>
+        <button class="button button-clear" ng-click="SharePage()">
+          <i class="icon ion-more"></i>
+        </button>
+ </div>
+  <div class="item nopadding" >
+    <img class="logo" src="img/temp/shop/shoplogo.png">
+    <img class="bgimage" src="img/temp/shop/shopbg.png" >
+  </div>
+  <div class="tabs tabs-relative height-80">
+  <a class="tab-item">
+    <div class="shopCount ">
+    <span class="shopnumcount">447</span>
+    <span class="shopcatetitle">全部</span>
+    </div>
+  </a>
+  <a class="tab-item">
+    <div class="shopCount">
+    <span class="shopnumcount">221</span>
+    <span class="shopcatetitle">优惠</span>
+    </div>
+  </a>
+  <a class="tab-item">
+   <div class="shopCount">
+    <span class="shopnumcount">20</span>
+    <span class="shopcatetitle">新品</span>
+    </div>
+  </a>
+</div>
+  <div class="item item-image">
+    <img src="img/temp/shop/shopimg1.png">
+  </div>
+<div class="card">
+<div class="item bar padding-top " style="border:none">
+  <div class="title title-left ">所有商品</div>
+ </div>
+
+</div>
+<div class="row">
+  <div class="col" >
+  <div class="item item-image product-big" ng-click="showProductDetail(1)">
+    <img src="img/temp/shop/product1.png">
+  </div>
+    <span class="padding-left padding-right product-desc">
+      无印良品 女士 短袖 强捻巴里纱短袖罩衫
+    </span>
+  <div class="padding-left padding-right">
+    <span class="price fl">
+      ￥ 270.00
+    </span>
+    <i class="icon ion-heart fr"></i>
+  </div>
+  </div>
+
+  <div class="col">
+  <div class="item item-image product-big">
+    <img src="img/temp/shop/product2.png">
+  </div>
+    <span class="padding-left padding-right product-desc">
+      无印良品 MUJI 玻璃杯
+    </span>
+  <div class="padding-left padding-right">
+    <span class="price fl">
+      ￥ 14.00
+    </span>
+    <i class="icon ion-heart fr"></i>
+  </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+  <div class="item item-image product-big">
+    <img src="img/temp/shop/product3.png">
+  </div>
+    <span class="padding-left padding-right product-desc">
+      无印良品 MUJI 麻平织枕套
+    </span>
+  <div class="padding-left padding-right">
+    <span class="price fl">
+      ￥ 68.00
+    </span>
+    <i class="icon ion-heart fr"></i>
+  </div>
+  </div>
+
+  <div class="col">
+  <div class="item item-image product-big">
+    <img src="img/temp/shop/product4.png">
+  </div>
+    <span class="padding-left padding-right product-desc">
+      无印良品 MUJI 可自由调节拉杆高度带轮锁硬壳拉杆箱
+    </span>
+  <div class="padding-left padding-right">
+    <span class="price fl">
+      ￥ 1288.00
+    </span>
+    <i class="icon ion-heart fr"></i>
+  </div>
+  </div>
+</div>
+</div>
+<div style="display:block;height:50px;">
+
+</div>
+</ion-content>
+
+<div class="button-bar " style="position:fixed;bottom:0">
+
+  <a class="button " style="padding:0px;" ng-click="openPopover($event)">
+    宝贝分类
+  </a>
+  <a class="button " style="padding:0px;">
+    店铺简介
+  </a>
+  <a class="button " style="padding:0px;">
+    联系卖家
+  </a>
+  <a class="button " style="padding:0px;">
+    付款
+  </a>
+</div>
+
+
+</ion-view>
+

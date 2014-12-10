@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductCommentMapper">
+
+	<!-- 商品基本信息resultMap 
+	<resultMap id="PRODUCT_COMMENTT_MAP" type="org.itboys.product.entity.mysql.product.ProductComment">
+		<result property="id" column="id" />
+		<result property="productId" column="product_id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="score" column="score" />
+		<result property="userId" column="user_id" />
+		<result property="status" column="status" />
+		<result property="containsForbiddenWords" column="contains_forbidden_words" />
+		<result property="createTime" column="create_time" />
+		<result property="replayTime" column="replay_time" />
+		<result property="score1" column="score1" />
+		<result property="replayer" column="replayer" />
+		<result property="score2" column="score2" />
+		<result property="score3" column="score3" />
+		<result property="score4" column="score4" />
+		<result property="score5" column="score5" />
+		<result property="score6" column="score6" />
+		<result property="advantage" column="advantage" />
+		<result property="disadvantage" column="disadvantage" />
+		<result property="experience" column="experience" />
+		<result property="fied1" column="fied1" />
+		<result property="fied2" column="fied2" />
+		<result property="isDeleted" column="is_deleted" />
+	</resultMap>
+	-->
+	<insert id="batchInsert">
+		INSERT INTO
+		product_comment(product_id,title,content,score,user_id,status,contains_forbidden_words,create_time,replay_time,replayer,
+		score1,score2,score3,score4,score5,score6,advantage,disadvantage,experience,fied1,fied2,is_deleted)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.productId},#{item.title},#{item.content},#{item.score},#{item.userId},0,#{item.containsForbiddenWords},now(),now(),0,
+
+			#{item.score1},#{item.score2},#{item.score3},#{item.score4},#{item.score5},#{item.score6},#{item.advantage},#{item.disadvantage},#{item.experience},#{item.fied1},#{item.fied2},1)
+		</foreach>
+	</insert>
+
+	<select id="findById" parameterType="long" resultType="org.itboys.product.entity.mysql.product.ProductComment">
+		select
+		id as id,product_id as productId,title as title,content as content,score as score,user_id as userId,status as status,contains_forbidden_words as containsForbiddenWords,
+		create_time as createTime,replay_time as replayTime,replayer as replayer,score1 as score1,score2 as score2,score3 as score3,score4 as score4,score5 as score5,score6 as score6,advantage as advantage,
+		disadvantage as disadvantage,experience as experience,fied1 as fied1,fied2 as fied2 from product_comment where
+		is_deleted=1 and id= #{id};
+	</select>
+	
+	<sql id="PRODUCT_COMMENT_CONDITION">
+		from product_comment where is_deleted=1
+		<if test="productId !=null">
+			<![CDATA[ and product_id = #{productId} ]]>
+		</if>
+
+		<if test="status !=null">
+			<![CDATA[ and status = #{status} ]]>
+		</if>
+		<if test="isDeleted !=null">
+			<![CDATA[ and is_deleted = #{isDeleted} ]]>
+		</if>
+		<if test="fied2 !=null">
+			<![CDATA[ and fied2 = #{fied2} ]]>
+		</if>
+		<if test="fied1 !=null">
+			<![CDATA[ and fied1 = #{fied1} ]]>
+		</if>
+	</sql>
+	
+	<select id="count2" resultType="Integer">
+		select count(*) <include refid="PRODUCT_COMMENT_CONDITION"/>
+	</select>
+	
+	<select id="list2" resultType="org.itboys.product.entity.mysql.product.ProductComment" parameterType="map">
+	    select
+		id as id,product_id as productId,title as title,content as content,score as score,user_id as userId,status as status,contains_forbidden_words as containsForbiddenWords,
+		create_time as createTime,replay_time as replayTime,replayer as replayer,score1 as score1,score2 as score2,score3 as score3,score4 as score4,score5 as score5,score6 as score6,advantage as advantage,
+		disadvantage as disadvantage,experience as experience,fied1 as fied1,fied2 as fied2 
+		<include refid="PRODUCT_COMMENT_CONDITION"/>
+		order by status,create_time desc
+		<if test="rowStart!=null  and pageSize!=null ">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+
+
+	<select id="count" resultType="Integer">
+		SELECT count(*) from
+		product_comment where status = 1 and is_deleted!=0 and product_id =
+		#{productId};
+	</select>
+
+	<select id="countForScore" resultType="long">
+		select count(*) from product_comment where day(create_time) =
+		day(now())
+		<if test="productId != null and productId != '' ">
+			and product_id = #{productId}
+		</if>
+		<if test="userId != null ">
+			and user_id = #{userId}
+		</if>
+	</select>
+
+
+	<select id="list" resultType="org.itboys.product.entity.mysql.product.ProductComment"
+		parameterType="map">
+		<![CDATA[ select
+		id as id,product_id as productId,title as title,content as content,score as score,user_id as userId,status as status,contains_forbidden_words as containsForbiddenWords,
+		create_time as createTime,replay_time as replayTime,replayer as replayer,score1 as score1,score2 as score2,score3 as score3,score4 as score4,score5 as score5,score6 as score6,advantage as advantage,
+		disadvantage as disadvantage,experience as experience,fied1 as fied1,fied2 as fied2  from `product_comment` where is_deleted=1 and  status!=2
+		]]>
+		<if test="productId !=null">
+			<![CDATA[ and product_id = #{productId} ]]>
+		</if>
+
+		<if test="status !=null">
+			<![CDATA[ and status = #{status} ]]>
+		</if>
+		<if test="isDeleted !=null">
+			<![CDATA[ and is_deleted = #{isDeleted} ]]>
+		</if>
+		<if test="fied2 !=null">
+			<![CDATA[ and fied2 = #{fied2} ]]>
+		</if>
+		<if test="fied1 !=null">
+			<![CDATA[ and fied1 = #{fied1} ]]>
+		</if>
+		<if test="rowStart!=null  and pageSize!=null ">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+
+	<select id="findByProductId" resultType="org.itboys.product.entity.mysql.product.ProductComment"
+		parameterType="map">
+		<![CDATA[ select
+		id as id,product_id as productId,title as title,content as content,score as score,user_id as userId,status as status,contains_forbidden_words as containsForbiddenWords,
+		create_time as createTime,replay_time as replayTime,replayer as replayer,score1 as score1,score2 as score2,score3 as score3,score4 as score4,score5 as score5,score6 as score6,advantage as advantage,
+		disadvantage as disadvantage,experience as experience,fied1 as fied1,fied2 as fied2 from `product_comment` where status = 1 and is_deleted!=0
+		]]>
+		<if test="productId !=null">
+			<![CDATA[ and product_id = #{productId} ]]>
+		</if>
+
+	</select>
+
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductComment">
+		insert into
+		product_comment(product_id,title,content,score,user_id,status,contains_forbidden_words,create_time,replay_time,replayer,
+		score1,score2,score3,score4,score5,score6,advantage,disadvantage,experience,fied1,fied2,is_deleted)
+		values
+		(#{productId},#{title},#{content},#{score},#{userId},0,#{containsForbiddenWords},now(),now(),#{replayer},
+		#{score1},#{score2},#{score3},#{score4},#{score5},#{score6},#{advantage},#{disadvantage},#{experience},#{fied1},#{fied2},1)
+		<selectKey keyProperty="id" resultType="long" order="AFTER">
+			select
+			last_insert_id();
+		</selectKey>
+	</insert>
+
+
+	<update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductComment">
+		update product_comment set id = #{id}
+		<if test="productId !=null">
+			<![CDATA[ , product_id=#{productId} ]]>
+		</if>
+		<if test="title !=null">
+			<![CDATA[ , title=#{title} ]]>
+		</if>
+		<if test="content !=null">
+		<![CDATA[ , content=#{content} ]]>
+		</if>
+		<if test="score !=null">
+			<![CDATA[ , score =#{score} ]]>
+		</if>
+		<if test="userId !=null">
+			<![CDATA[ , user_id=#{userId} ]]>
+		</if>
+		<if test="status !=null ">
+			<![CDATA[ , status=#{status} ]]>
+		</if>
+		<if test="containsForbiddenWords!=null ">
+			<![CDATA[ ,contains_forbidden_words=#{containsForbiddenWords} ]]>
+		</if>
+		<if test="createTime !=null">
+			<![CDATA[ ,create_time=#{createTime} ]]>
+		</if>
+		<if test="replayTime !=null ">
+			<![CDATA[ , replay_time=#{replayTime} ]]>
+		</if>
+		<if test="replayer !=null ">
+			<![CDATA[ , replayer=#{replayer} ]]>
+		</if>
+		<if test="score1 !=null">
+			<![CDATA[ , score1=#{score1} ]]>
+		</if>
+		<if test="score2 !=null">
+			<![CDATA[ , score2=#{score2} ]]>
+		</if>
+		<if test="score3 !=null">
+			<![CDATA[ , score3=#{score3} ]]>
+		</if>
+		<if test="score4 !=null">
+			<![CDATA[ , score4=#{score4} ]]>
+		</if>
+		<if test="score5 !=null">
+			<![CDATA[ , score5=#{score5} ]]>
+		</if>
+		<if test="score6 !=null">
+			<![CDATA[ , score6=#{score6} ]]>
+		</if>
+		<if test="fied1 !=null and fied1 !=''">
+			<![CDATA[ , `fied1`=#{fied1} ]]>
+		</if>
+		<if test="fied2 !=null and fied2 !=''">
+			<![CDATA[ , `fied2`=#{fied2} ]]>
+		</if>
+		<if test="score !=null ">
+			<![CDATA[ , `score`=#{score} ]]>
+		</if>
+		where id=#{id} and is_deleted !=0
+	</update>
+
+	<update id="delete" parameterType="long">
+		update product_comment set
+		is_deleted=0 where id=#{id}
+	</update>
+	
+	<select id="avgScore" resultType="long" parameterType="long">
+		select ROUND(avg(score),0) from product_comment where product_id = #{productId}
+	</select>
+
+</mapper>

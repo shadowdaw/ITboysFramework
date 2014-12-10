@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.order.CartItemMapper">
+     <!--  商品基本信息resultMap  -->
+	 <resultMap id="CartItemMap" type="org.itboys.product.entity.mysql.CartItem">
+		<result property="id" column="id" />
+		<result property="memberId" column="member_id" />
+		<result property="cookie" column="cookie" />
+		<result property="productId" column="product_id" />
+		<result property="price" column="price" />
+		<result property="fee" column="fee" />
+		<result property="num" column="num" />
+		<result property="updateTime" column="update_time" />
+		<result property="elements" column="elements" />
+		<result property="guigeIds" column="guige_ids" />
+		<result property="type" column="type" />
+		<result property="objId" column="obj_id" />
+	 </resultMap>
+	
+	
+	<sql id="CartItem_FIELDS">
+		id,member_id,product_id,cookie,num,price,fee,update_time,elements,guige_ids,type,obj_id
+	</sql>	
+    
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.CartItem" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+       INSERT INTO cart_item(member_id,product_id,cookie,num,price,fee,update_time,elements,guige_ids,type,obj_id)
+        VALUES (#{memberId},#{productId},#{cookie},#{num},#{price},#{fee},now(),#{elements},#{guigeIds},#{type},#{objId})
+    	 <selectKey keyProperty="id" resultType="long" order="AFTER">  
+         	SELECT LAST_INSERT_ID();  
+   		 </selectKey>
+    </insert>
+    
+     <update id="update" parameterType="org.itboys.product.entity.mysql.CartItem" >
+	    UPDATE cart_item  set ID = #{id}  
+     <if test="memberId !=null ">
+		<![CDATA[ , member_id=#{memberId} ]]>
+	 </if>
+	 <if test="productId !=null" >
+		<![CDATA[ , product_id=#{productId} ]]>
+	 </if>
+	 <if test="cookie !=null ">
+		<![CDATA[ , cookie=#{cookie} ]]>
+	 </if>
+	 <if test="price !=null ">
+		<![CDATA[ , price=#{price} ]]>
+	 </if>
+	 <if test="fee !=null ">
+		<![CDATA[ ,fee=#{fee} ]]>
+	 </if>
+	 <if test="updateTime !=null ">
+		<![CDATA[ , update_time=#{updateTime} ]]>
+	 </if>
+	 <if test="elements !=null ">
+		<![CDATA[ , elements=#{elements} ]]>
+	 </if>
+	 <if test="num !=null ">
+		<![CDATA[ , num=#{num} ]]>
+	 </if>
+	  <if test="guigeIds !=null ">
+		<![CDATA[ , guige_ids=#{guigeIds} ]]>
+	 </if>
+	 <if test="type!=null ">
+		<![CDATA[ , `type`=#{type} ]]>
+	 </if>
+     WHERE ID = #{id}  
+  </update>
+  
+  <insert id="batchInsert">
+       INSERT INTO cart_item(member_id,product_id,cookie,num,price,fee,update_time,elements,guige_ids,type,obj_id)  VALUES 
+        <foreach collection="list" item="item" index="index"  separator=",">
+    		 ( #{item.memberId}, #{item.productId}, #{item.cookie},#{item.num}, #{item.price},#{item.fee},now(),#{item.elements},#{item.guigeIds},#{item.type},#{item.objId})
+    	</foreach>
+    </insert>
+    
+     <select id="getCartItemByMemberId" resultMap="CartItemMap" parameterType="map">
+		SELECT
+		<include refid="CartItem_FIELDS" />
+		from cart_item where `member_id` = #{memberId}
+	    and product_id=#{productId} and guige_ids=#{guigeIds}
+	</select>
+	
+	<select id="getCartItemByMemberIdAndType" resultMap="CartItemMap" parameterType="map">
+		SELECT
+		<include refid="CartItem_FIELDS" />
+		from cart_item where `member_id` = #{memberId}
+	    and product_id=#{productId} and guige_ids=#{guigeIds} and type=#{type} and obj_id=#{objId}
+	</select>	
+	
+	<update id="cookieToSession" parameterType="map">
+		update cart_item set cookie=0,member_id=#{memberId} where cookie=#{cookie} 
+	</update> 
+	
+	<select id="getCartItemByCookie" resultMap="CartItemMap" parameterType="map">
+		SELECT
+		<include refid="CartItem_FIELDS" />
+		from cart_item where `cookie` = #{cookie}
+	    and product_id=#{productId} and guige_ids=#{guigeIds}
+	</select>
+	
+	<select id="getCartItemByCookieAndType" resultMap="CartItemMap" parameterType="map">
+		SELECT
+		<include refid="CartItem_FIELDS" />
+		from cart_item where `cookie` = #{cookie}
+	    and product_id=#{productId} and guige_ids=#{guigeIds} and type=#{type} and obj_id=#{objId}
+	</select>
+	
+	<select id="getCartItemsByMemberId"  resultMap="CartItemMap" parameterType="long">
+		SELECT
+		<include refid="CartItem_FIELDS" />
+		from cart_item where `member_id` = #{memberId} 
+	</select>
+	
+	<select id="getCartItemsByCookie"  resultMap="CartItemMap" parameterType="string">
+		SELECT
+		<include refid="CartItem_FIELDS" />
+		from cart_item where `cookie` = #{cookie} 
+	</select>
+	
+	 <delete id="deleteCartItemByMemberId" parameterType="map" >
+	    delete from  cart_item where `member_id` = #{memberId}
+	    and product_id=#{productId} and guige_ids=#{guigeIds}
+   </delete>
+   
+   <delete id="deleteCartItemByMemberIdAndType" parameterType="map" >
+	    delete from  cart_item where `member_id` = #{memberId}
+	    and product_id=#{productId} and guige_ids=#{guigeIds} and type=#{type} and obj_id=#{objId}
+   </delete>
+   
+    <delete id="deleteCartItemByMemberIdAndTypePrice" parameterType="map" >
+	    delete from  cart_item where `member_id` = #{memberId}
+	    and product_id=#{productId} and guige_ids=#{guigeIds} and type=#{type} 
+	    and obj_id=#{objId} price=#{price}
+   </delete>
+	
+	<delete id="deleteCartItemByCookie" parameterType="map" >
+	    delete from  cart_item  where `cookie` = #{cookie}
+	    and product_id=#{productId} and guige_ids=#{guigeIds}
+   </delete>
+   
+   <delete id="deleteCartItemByCookieAndType" parameterType="map" >
+	    delete from  cart_item  where `cookie` = #{cookie}
+	    and product_id=#{productId} and guige_ids=#{guigeIds} and type=#{type} and obj_id=#{objId}
+   </delete>
+      
+   <delete id="deleteCartItemByCookieAndTypePrice" parameterType="map" >
+	    delete from  cart_item  where `cookie` = #{cookie}
+	    and product_id=#{productId} and guige_ids=#{guigeIds} and type=#{type} 
+	    and obj_id=#{objId} and price=#{price}
+   </delete>
+   
+   <delete id="deleteCartItemsByMemberId" parameterType="long" >
+	    delete from  cart_item  WHERE member_id = #{memberId}  
+   </delete>
+	
+	<delete id="deleteCartItemsByCookie" parameterType="string" >
+	    delete from  cart_item  WHERE cookie = #{cookie}  
+   </delete>
+	
+	<update id="cookieToMember">
+	    <![CDATA[ update  cart_item set member_id = #{memberId} WHERE  cookie = #{cookie}  ]]>
+   </update>
+  	
+  	<delete id="deleteByType" parameterType="long" >
+	    delete from  cart_item  where type = #{type}  
+   </delete>
+  	
+  	<select id="getCartItemsByType" resultMap="CartItemMap" parameterType="long">
+  		SELECT
+		<include refid="CartItem_FIELDS" />
+		from cart_item where type=#{type}
+  	</select>
+</mapper>

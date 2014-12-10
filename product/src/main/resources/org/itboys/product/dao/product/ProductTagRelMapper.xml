@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductTagRelMapper">
+	
+	<sql id="SELECT_PRODUCTTAGREL_CONDITION">
+		from product_tag_rel where 1=1
+		<if test="id!=null">
+			<![CDATA[ and id=#{id}]]>
+		</if>
+		<if test="proTagId!=null">
+			<![CDATA[ and pro_tag_id=#{proTagId}]]>
+		</if>
+		<if test="objId!=null">
+			<![CDATA[ and obj_id=#{objId}]]>
+		</if>
+		<if test="productId!=null">
+			<![CDATA[ and product_id=#{productId}]]>
+		</if>
+		<if test="productId!=null">
+			<![CDATA[ and product_id=#{productId}]]>
+		</if>
+	</sql>
+	
+	
+ 	<select id="list" resultType="org.itboys.product.entity.mysql.product.ProductTagRel">
+		select id,pro_tag_id as proTagId,product_id as productId,obj_id as objId,fied1,creator,updater,create_time as createTime,update_time as updateTime
+		<include refid="SELECT_PRODUCTTAGREL_CONDITION"/>
+	</select>
+	
+    <insert id="batchInsert">
+  	     insert into product_tag_rel(pro_tag_id,product_id,obj_id,fied1,create_time,creator,update_time,updater)values
+  		<foreach collection="list" item="item" index="index"  separator=",">
+  			(#{item.proTagId},#{item.productId},#{item.objId},#{item.fied1},now(),#{item.creator},now(),#{item.updater})
+  		</foreach>
+    </insert>
+    
+    <insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductTagRel">
+  	     insert into product_tag_rel(pro_tag_id,product_id,obj_id,fied1,create_time,creator,update_time,updater)values
+  		(#{proTagId},#{productId},#{objId},#{fied1},now(),#{creator},now(),#{updater})
+    </insert>
+	  
+	<delete id="delete" parameterType="long">
+		delete  from product_tag_rel  where product_id=#{productId}
+	</delete>
+	
+	<select id="selectProIds" resultType="long">
+		select product_id from product_tag_rel where 1=1
+		<if test="proTagId!=null">
+			<![CDATA[ and pro_tag_id=#{proTagId}]]>
+		</if>
+		<if test="objId !=null">
+			 and  obj_id in 
+			 (select id from product_category where id in
+			 	(select id from product_category where id in
+			 	<foreach item="item" index="index" collection="objId" open="(" separator="," close=")">
+	           	 #{item}
+	        	</foreach> 
+	        	or parent_id in
+	        	<foreach item="item" index="index" collection="objId" open="(" separator="," close=")">
+	            	#{item}
+	        	</foreach>)
+	        	or parent_id in
+	        	(select id from product_category where id in
+			 	<foreach item="item" index="index" collection="objId" open="(" separator="," close=")">
+	           	 #{item}
+	        	</foreach> 
+	        	or parent_id in
+	        	<foreach item="item" index="index" collection="objId" open="(" separator="," close=")">
+	            	#{item}
+	        	</foreach>)
+			 )
+		</if>
+	</select>
+	
+</mapper>

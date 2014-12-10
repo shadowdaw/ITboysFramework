@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductTextMapper">
+	 
+	<select id="findByProductId" resultType="org.itboys.product.entity.mysql.product.ProductText" parameterType="long">
+		SELECT product_id as productId,text,text1,text2,text3,text4
+		from `product_text` where `product_id` = #{productId}
+	</select>
+	
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductText">
+       INSERT INTO product_text(product_id,text,text1,text2,text3,text4)
+        VALUES (#{productId},#{text},#{text1},#{text2},#{text3},#{text4})
+   </insert>
+
+	
+    <delete id="deleteByProductId" parameterType="long" >
+	    delete from product_text   where product_id=#{productId}
+   </delete>	
+   		  
+   		  <update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductText">
+		update product_text set product_id=#{productId}
+		<if test="text !=null and text !=''">
+			<![CDATA[ , text=#{text}]]>
+		</if>
+		<if test="text1 !=null and text1 !=''">
+			<![CDATA[ , text1=#{text1}]]>
+		</if>
+		<if test="text2 !=null and text2 !=''">
+			<![CDATA[ , text2=#{text2}]]>
+		</if>
+		<if test="text3 !=null and text3 !=''">
+			<![CDATA[ , text3=#{text3}]]>
+		</if>
+		<if test="text4 !=null and text4 !=''">
+			<![CDATA[ , text4=#{text4}]]>
+		</if>
+		where product_id=#{productId}
+	</update>
+	
+</mapper>

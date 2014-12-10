@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductCategoryConfigMapper">
+
+	
+	<select id="getListByCodeConfigId" resultType="org.itboys.product.entity.mysql.product.ProductCategoryConfig">
+		select id,value,code_config_id as codeConfigId,color_name as colorName
+		from product_category_config where code_config_id = #{codeConfigId}
+	</select>
+	
+	<select id="getListByIds" resultType="org.itboys.product.entity.mysql.product.ProductCategoryConfig">
+		select id,code_config_id as codeConfigId,value,color_name as colorName from product_category_config
+		<if test="list!=null">
+			where code_config_id in <foreach item="item" index="index" collection="list" open="(" separator="," close=")">#{item}</foreach>
+		</if> 
+	</select>
+	
+	<select id="findById" parameterType="long" resultType="org.itboys.product.entity.mysql.product.ProductCategoryConfig">
+		select id,value,code_config_id as codeConfigId,color_name as colorName
+		 from product_category_config where id=#{id}
+	</select>
+	
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductCategoryConfig" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		insert into product_category_config(value,code_config_id,color_name) 
+		values(#{value},#{codeConfigId},#{colorName})
+	</insert>
+	
+	<update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductCategoryConfig">
+		update product_category_config set id=#{id}
+		<if test="value !=null and value !=''">
+			<![CDATA[ , value=#{value}]]>
+		</if>
+		<if test="colorName !=null and colorName !=''">
+			<![CDATA[ , color_name=#{colorName}]]>
+		</if>
+		where id=#{id} 
+	</update>
+	
+	<delete id="delete" parameterType="long">
+		delete from product_category_config  where id=#{id} 
+	</delete>
+</mapper>

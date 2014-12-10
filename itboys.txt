@@ -1,0 +1,18 @@
+itboys 一期介绍
+团队成员 陈俊晖 韦士奎  章宦亮 于洲
+后台  Dropwizard+jersey+spring+(mybatis/hibernate/morphia )+(jquery miniUI or Extjs) 不用tomcat等容器 直接 dropwinzad 启动 省去编译打包的时间
+前台  spring mvc+spring+(mybatis/hibernate/morphia )+velocity+bootstrap(可用)+jquery的一些常用插件demo jetty插件启动 省去编译打包时间
+分布式缓存和一些计数器和关系等redis支持的数据结构 redis
+数据库 mongodb mysql + hbasedemo
+分布式协调 zookeeper (spring的动态属性就配zookeeper里 不用现在的maven resource插件)
+搜索引擎 zookeeper+solrcloud
+可靠消息队列 zookeeper+activemq+leveldb
+高并发消息队列 zookeeper+kafka
+实时数据流demo(实时数据统计和分析等做一个demo) zookeeper+flume+kafka+storm+mysql
+离线数据分析demo hadoop+hive+sqoop+mysql
+有空玩下mahout demo
+自动化编译部署运维 走 jenkins
+netty和mina的nio框架研究和即时通讯封装
+高可靠多协议基础分布式服务框架 阿里巴巴 dubbo (zookeeper协调)
+java并发编程研究和demo
+然后自己写写linux下shell 的 监控脚本 包括内存 cpu 死锁 溢出 网络等的监控和检测

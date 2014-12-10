@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductParamConfigMapper">
+
+
+	<select id="getListByCatid" resultType="org.itboys.product.entity.mysql.product.ProductParamConfig">
+		select id,cat_id as
+		catId,type,name,`desc`,need_unit as needUnit,unit,extend_field as
+		extendField
+		from product_param_config where cat_id = #{catId}
+	</select>
+	
+	<sql id="PRODUCT_PARAM_CONFIG_CONDITION">
+		from product_param_config
+		<where>
+			<if test="catId !=null">
+			<![CDATA[ and cat_id=#{catId}]]>
+			</if>
+			<if test="name !=null and name !='' ">
+			<![CDATA[ and name=#{name}]]>
+			</if>
+			<if test="id !=null">
+			<![CDATA[ and id!=#{id}]]>
+			</if>
+		</where>
+	</sql>
+
+	<select id="list" resultType="org.itboys.product.entity.mysql.product.ProductParamConfig">
+		select id,cat_id as catId,type,name,`desc`,need_unit as
+		needUnit,unit,extend_field as extendField
+		<include refid="PRODUCT_PARAM_CONFIG_CONDITION"/>
+		<if test="rowStart!=null  and pageSize!=null ">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+	
+	<select id="count" resultType="long">
+		select count(*) <include refid="PRODUCT_PARAM_CONFIG_CONDITION"/>
+	</select>
+
+
+	<select id="findById" parameterType="long" resultType="org.itboys.product.entity.mysql.product.ProductParamConfig">
+		select
+		id,cat_id as catId,type,name,`desc`,need_unit as
+		needUnit,unit,extend_field as extendField
+		from product_param_config where id=#{id}
+	</select>
+
+
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductParamConfig"
+		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		insert into
+		product_param_config(name,cat_id,type,`desc`,need_unit,unit,extend_field)
+		values(#{name},#{catId},#{type},#{desc},#{needUnit},#{unit},#{extendField})
+	</insert>
+
+	<update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductParamConfig">
+		update product_param_config set id=#{id}
+		<if test="type !=null ">
+			<![CDATA[ , type=#{type}]]>
+		</if>
+		<if test="name !=null and name !=''">
+			<![CDATA[ , name=#{name}]]>
+		</if>
+		<if test="desc !=null and desc !=''">
+			<![CDATA[ , `desc`=#{desc}]]>
+		</if>
+		<if test="needUnit !=null ">
+			<![CDATA[ , need_unit=#{needUnit}]]>
+		</if>
+		<if test="unit !=null and unit !=''">
+			<![CDATA[ , unit=#{unit}]]>
+		</if>
+		<if test="extendField !=null and extendField !=''">
+			<![CDATA[ , extend_field=#{extendField}]]>
+		</if>
+		where id=#{id}
+	</update>
+
+	<delete id="delete" parameterType="long">
+		delete from
+		product_param_config where id=#{id}
+	</delete>
+
+	<delete id="deleteByCatId" parameterType="long">
+		delete from
+		product_param_config where cat_id=#{catId}
+	</delete>
+
+	<select id="findParamAndValue" resultType="org.itboys.product.dto.product.ParamValue">
+		select c.name,p.value
+		from product_param p
+		left join product_param_config c
+		on c.id = p.param_config_id where p.product_id=#{productId}
+	</select>
+
+	<select id="getListByProductId" parameterType="long"
+		resultType="org.itboys.product.entity.mysql.product.ProductParamConfig">
+		select id,cat_id as catId,type,name,`desc`,need_unit as
+		needUnit,unit,extend_field as extendField
+		from product_param_config
+		where id in(select param_config_id from product_param where
+		product_id=#{productId})
+	</select>
+
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductCategoryBrandMapper">
+    <!-- 
+     <resultMap id="PRODUCT_CATEGORY_BRAND_MAP" type="org.itboys.product.dto.product.ProductBrandDTO">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="catId" column="cat_id" />
+		<result property="enName" column="en_name" />
+		<result property="logo" column="logo" />
+		<result property="title" column="title" />
+		<result property="brandId" column="brand_id" />
+	 </resultMap>
+	  -->
+	<select id="findByCatId"  resultType="org.itboys.product.dto.product.ProductBrandDTO">
+		select pc.id as id,pc.brand_id as brandId,pc.cat_id as catId,pb.en_name as enName,pb.logo as logo,pb.name as name
+		from product_category_brand pc left join product_brand pb on pc.brand_id = pb.id
+		where pc.cat_id=#{catId}
+	</select>
+	
+	<select id="findByCatIdAndBrandId" parameterType="long" resultType="org.itboys.product.entity.mysql.product.ProductCategoryBrand">
+		select id,brand_id as brandId,cat_id as catId
+		 from product_category_brand where cat_id=#{catId} and brand_id = #{brandId}
+	</select>
+	
+	<select id="getCateIdByBrandId" parameterType="long" resultType="long">
+		select cat_id from product_category_brand where brand_id = #{brandId}
+	</select>
+	
+	 <insert id="batchInsert">
+       INSERT INTO product_category_brand(brand_id,cat_id,creator,create_time,updater,update_time)  VALUES 
+        <foreach collection="list" item="item" index="index"  separator=",">
+    		 ( #{item.brandId},#{item.catId},#{item.creator},now(),#{item.updater},now())
+    	</foreach>
+    </insert>
+    
+	<delete id="delete" parameterType="long">
+		delete from product_category_brand  where id =#{id}
+	</delete>
+	
+	<delete id="deleteByCatId" parameterType="long">
+		delete from product_category_brand  where cat_id =#{catId}
+	</delete>
+	
+	<delete id="deleteByBrandId" parameterType="long">
+		delete from product_category_brand  where brand_id =#{brandId}
+	</delete>
+	
+</mapper>

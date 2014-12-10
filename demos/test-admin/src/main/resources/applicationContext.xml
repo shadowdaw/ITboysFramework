@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
+		default-lazy-init="true">
+
+	<description>Spring公共配置 </description>
+	
+	<context:component-scan base-package="org.itboys" />
+	
+	<bean id="springContextHolder" class="org.itboys.framework.spring.context.SpringContextHolder" lazy-init="false"/>
+	
+	<bean id="mongoClient" class="org.itboys.mongodb.core.MongoDBClientFactoryBean">
+		<property name="servers" value="${mongo.servers}" />
+		<property name="maxWaitTime" value="${mongo.maxWaitTime}" />
+		<property name="autoConnectRetry" value="${mongo.autoConnectRetry}" />
+		<property name="connectionsPerHost" value="${mongo.connectionsPerHost}" />
+		<property name="socketTimeout" value="${mongo.socketTimeout}" />
+		<property name="threadsAllowedToBlockForConnectionMultiplier" value="${mongo.threadsAllowedToBlockForConnectionMultiplier}" />
+	</bean>
+	<!-- 要扫描的实体包加到这里 -->
+ 	<bean id="morphia" class="org.itboys.mongodb.core.MorphiaEntities">
+ 		<property name="entityPackages">
+			<array>
+				<value>org.itboys.mongodb.entity</value>
+				<value>org.itboys.admin.entity</value>
+			</array>
+		</property>
+ 	</bean>
+ 	<bean id="mongoDatastore"  class="org.itboys.mongodb.core.MongoDataSource">
+		<constructor-arg ref="morphia" />
+		<constructor-arg ref="mongoClient" />
+		<!-- dbName -->
+		<constructor-arg value="${mongo.db}" />
+		<!-- username and password 
+			<constructor-arg value="jungege" />
+			<constructor-arg value="haoshuai" />
+		-->
+	</bean>
+	
+	<bean id="adminDS" class="org.itboys.mongodb.core.MongoDataSourceFactoryBean">
+		<property name="mongoDataSourceBean" value="mongoDatastore" />
+	</bean>	
+	
+	<bean id="baseMongoDS" class="org.itboys.mongodb.core.MongoDataSourceFactoryBean">
+		<property name="mongoDataSourceBean" value="mongoDatastore" />
+	</bean>	
+	
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="2097152" />
+	</bean>
+	
+	<bean id="resourceHolder" class="org.itboys.framework.resource.ResourceHolder" lazy-init="false">  
+	  <property name="resourceMap">  
+	      <map>  
+	        <entry key="adminLoginUrl" value="${admin.login.url}"/> 
+	        <entry key="adminIndexUrl" value="${admin.index.url}"/>  
+	      </map>  
+	  </property>  
+	</bean> 
+	
+	<bean id="staticResourceHolder" class="org.itboys.framework.resource.ResourceHolder" lazy-init="false">  
+	  <property name="resourceMap">  
+	      <map>  
+	        <entry key="fileUploadPath" value="${file.upload.path}"/> 
+	        <entry key="staticRoot" value="${static.root}"/>
+	        <entry key="webRoot" value="${web.root}"/>
+	        <entry key="imgRoot" value="${image.root}"/>
+	        <entry key="adminRoot" value="${admin.web.root}"/>
+	      </map>  
+	  </property>  
+	</bean> 
+	
+	<bean id="initAdminDataService" class="org.itboys.admin.service.InitAdminDataService" lazy-init="false">
+		<property name="username" value="admin"/>
+		<property name="adminMenuUrl" value="#"/>
+		<property name="menuManageUrl" value="/admin/menu/menu.html"/>
+		<property name="userManageUrl" value="/admin/user/user.html"/>
+		<property name="roleManageUrl" value="/admin/role/role.html"/>
+		<property name="permissionManageUrl" value="/admin/permission/permission.html"/>
+		<property name="orgManageUrl" value="/admin/org/org.html"/>
+		<property name="postManageUrl" value="/admin/post/post.html"/>
+	</bean>
+		
+	<bean id="propertyConfigurerForAnalysis" class="org.itboys.framework.spring.config.ItboysPropertyPlaceholderConfigurer" />
+
+	<!-- velocity引擎 -->  
+    <bean id="velocityConfigurer"   
+        class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">  
+        <!-- 正式环境可配置相对路径 亦可配置绝对路径 开发时候配绝对路径修改vm模板无需启动  --> 
+        <property name="resourceLoaderPath" value="${velocity.template.path}" />
+        <property name="velocityProperties">     
+	        <props>     
+	             <prop key="input.encoding">UTF-8</prop>     
+	             <prop key="output.encoding">UTF-8</prop>  
+	             <prop key="velocimacro.library.autoreload">true</prop>
+	        </props>     
+      	</property>     
+    </bean>   
+    
+    <!-- velocity解析器 -->  
+	<bean id="viewResolver" 
+		 class="org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver">  
+		 <property name="exposeRequestAttributes" value="true" />
+		 <property name="exposeSessionAttributes" value="true" />
+		 <property name="exposeSpringMacroHelpers" value="true" />
+		 <property name="contentType" value="text/html;charset=UTF-8" />
+         <property name="cache" value="true" /> 
+         <property name="prefix" value="/screen/" />
+         <property name="suffix" value=".vm" />
+         <property name="layoutUrl" value="/layout/common-layout.vm" />
+		 <property name="toolboxConfigLocation" value="classpath*:/templates/velocity-toolbox.xml" />
+		 <property name="requestContextAttribute" value="rc" />
+    </bean> 
+</beans>

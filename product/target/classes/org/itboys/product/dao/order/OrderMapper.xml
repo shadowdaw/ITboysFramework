@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.order.OrderMapper">
+	<!-- 订单基本信息resultMap -->
+	<resultMap id="RESULT_ORDER_MAP" type="org.itboys.product.entity.mysql.Order">
+		<id property="id" column="id" />
+		<result property="orderNo" column="order_no" />
+		<result property="memberId" column="member_id" />
+		<result property="status" column="status" />
+		<result property="payType" column="pay_type" />
+		<result property="payMethod" column="pay_method" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="finishedTime" column="finished_time" />
+		<result property="totalFee" column="total_fee" />
+		<result property="fee" column="fee" />
+		<result property="expressFee" column="express_fee" />
+		<result property="expressAddFee" column="express_add_fee" />
+		<result property="memo" column="memo" />
+		<result property="orderFee" column="ordered_fee" />
+		<result property="periodFee" column="period_fee" />
+		<result property="periodCount" column="period_count" />
+		<result property="contactId" column="contact_id" />
+		<result property="mobile" column="mobile" />
+		<result property="name" column="name" />
+		<result property="email" column="email" />
+		<result property="payTime" column="pay_time" />
+		<result property="cancelTime" column="cancel_time" />
+		<result property="cancelReason" column="cancel_reason" />
+		<result property="wyCode" column="wy_code" />
+		<result property="sellerId" column="seller_id" />
+		<result property="objId" column="obj_id" />
+		<result property="objId2" column="obj2_id" />
+		<result property="isUsedVirtual" column="is_used_virtual" />
+		<result property="express" column="express" />
+		<result property="expressNo" column="express_no" />
+		<result property="sendTime" column="send_time" />
+		<result property="receiveTime" column="receive_time" />
+	</resultMap>
+
+
+	<sql id="CARITEM_FIELDS">
+		id, order_no, member_Id, status, pay_type, pay_method,
+		finished_time, total_fee, express_fee, express_add_fee,
+		memo,
+		ordered_fee, period_fee, period_count, contact_id, mobile, name,
+		email, pay_time, cancel_time, cancel_reason,
+		wy_code, seller_id,
+		obj_id, obj2_id,
+		is_used_virtual,express,express_no,send_time,receive_time
+	</sql>
+
+
+	<sql id="SELECT_ORDER_CONDITION">
+		FROM `order` where status!=-1
+		<if test="orderNo !=null ">
+			<![CDATA[ AND order_no like CONCAT('%',#{orderNo},'%') ]]>
+		</if>
+		<if test="memberId !=null ">
+			<![CDATA[ AND member_id=#{memberId} ]]>
+		</if>
+		<if test="status !=null ">
+			<![CDATA[ AND status=#{status} ]]>
+		</if>
+		<if test="payType !=null ">
+			<![CDATA[ AND pay_type=#{payType} ]]>
+		</if>
+		<if test="payMethod !=null ">
+			<![CDATA[ AND pay_method=#{payMethod} ]]>
+		</if>
+		<if test="createTime !=null ">
+			<![CDATA[ AND create_time=#{createTime} ]]>
+		</if>
+		<if test="updateTime !=null ">
+			<![CDATA[ AND update_time=#{updateTime} ]]>
+		</if>
+		<if test="finishedTime !=null ">
+			<![CDATA[ AND finished_time=#{finishedTime} ]]>
+		</if>
+		<if test="totalFee !=null ">
+			<![CDATA[ AND total_fee=#{totalFee} ]]>
+		</if>
+		<if test="expressFee !=null ">
+			<![CDATA[ AND express_fee=#{expressFee} ]]>
+		</if>
+		<if test="expressAddFee !=null ">
+			<![CDATA[ AND express_add_fee=#{expressAddFee} ]]>
+		</if>
+		<if test="memo !=null ">
+			<![CDATA[ AND memo=#{memo} ]]>
+		</if>
+		<if test="orderFee !=null ">
+			<![CDATA[ AND ordered_fee=#{orderFee} ]]>
+		</if>
+		<if test="periodFee !=null ">
+			<![CDATA[ AND period_fee=#{periodFee} ]]>
+		</if>
+		<if test="periodCount !=null ">
+			<![CDATA[ AND period_count=#{periodCount} ]]>
+		</if>
+		<if test="contactId !=null ">
+			<![CDATA[ AND contact_id=#{contactId} ]]>
+		</if>
+		<if test="mobile !=null ">
+			<![CDATA[ AND mobile=#{mobile} ]]>
+		</if>
+		<if test="email !=null ">
+			<![CDATA[ AND email=#{email} ]]>
+		</if>
+		<if test=" payTime !=null ">
+			<![CDATA[ AND pay_time=#{payTime} ]]>
+		</if>
+		<if test="cancelTime !=null ">
+			<![CDATA[ AND cancel_time=#{cancelTime} ]]>
+		</if>
+		<if test="cancelReason !=null ">
+			<![CDATA[ AND cancel_reason=#{cancelReason} ]]>
+		</if>
+		<if test="wyCode !=null ">
+			<![CDATA[ AND wy_code=#{wyCode} ]]>
+		</if>
+		<if test="sellerId !=null ">
+			<![CDATA[ AND seller_id=#{sellerId} ]]>
+		</if>
+		<if test="objId !=null ">
+			<![CDATA[ AND obj_id=#{objId} ]]>
+		</if>
+		<if test="objId !=null ">
+			<![CDATA[ AND obj2_id=#{objId} ]]>
+		</if>
+		<if test="isUsedVirtual !=null ">
+			<![CDATA[ AND is_used_virtual=#{isUsedVirtual} ]]>
+		</if>
+		<if test="express !=null ">
+			<![CDATA[ AND express=#{express} ]]>
+		</if>
+		<if test="expressNo !=null ">
+			<![CDATA[ AND express_no=#{expressNo} ]]>
+		</if>
+		<if test="sendTime !=null ">
+			<![CDATA[ AND send_time=#{sendTime} ]]>
+		</if>
+		<if test="receiveTime !=null ">
+			<![CDATA[ AND receive_time=#{receiveTime} ]]>
+		</if>
+		<if test="member !=null and member =='member' ">
+			<![CDATA[ AND status <>7 ]]>
+		</if>
+		<if test="brandId != null">
+			<![CDATA[ AND id in(select order_id from order_item where product_id in(select id from product where brand_id = #{brandId})) ]]>
+		</if>
+		<if test="userName != null and userName !=''">
+			<![CDATA[ AND member_id in(select id from member where user_name like CONCAT('%',#{userName},'%')) ]]>
+		</if>
+		<if test="name != null and name !=''">
+			<![CDATA[ AND member_id in(select id from member where name like CONCAT('%',#{name},'%')) ]]>
+		</if>
+		<if test="mobiles != null and mobiles !=''">
+			and mobile in
+			<foreach item="item" index="index" collection="mobiles" open="(" separator="," close=")">
+	              #{item}
+		  	</foreach>
+			<![CDATA[ AND member_id in(select id from member where mobile in #{mobiles})) ]]>
+		</if>
+		<if test="finishedTime!=null  and  createTime!=null">
+			<![CDATA[ AND create_time >=  STR_TO_DATE(#{createTime}, '%Y-%m-%d') and  create_time <  ADDDATE(STR_TO_DATE(#{finishedTime}, '%Y-%m-%d'),1) ]]>
+		</if>
+		<if test="startTime!=null and startTime!=''">  <!-- 某个时间段的订单 -->
+			<![CDATA[ AND create_time >=#{startTime}]]>
+		</if>
+		<if test="endTime!=null and endTime!=''"> 
+			<![CDATA[ AND create_time< adddate(#{endTime},1)]]>
+		</if>
+	</sql>
+
+	<select id="list" resultMap="RESULT_ORDER_MAP">
+		SELECT id, order_no, member_Id, status, pay_type, pay_method,
+		finished_time,fee, total_fee, express_fee, express_add_fee,
+		memo,
+		ordered_fee, period_fee, period_count, contact_id, mobile, name,
+		email, pay_time, cancel_time, cancel_reason,
+		wy_code, seller_id,
+		obj_id, obj2_id,
+		is_used_virtual,express,express_no,send_time,receive_time,update_time,create_time
+		<include refid="SELECT_ORDER_CONDITION" /> 
+		<if test="brandId!=null">
+			<![CDATA[ AND id in(select order_id from order_item where product_id in(select id from product  where brand_id=#{brandId})) ]]>
+		</if>
+		order by id desc
+		<if test="rowStart!=null and pageSize!=null">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+
+	<select id="memberOrderTotalNum" resultType="long">
+		SELECT COUNT(*) from
+		`order` where member_id=#{memberId} and status=3;
+	</select>
+	
+	<select id="memberProductTotalNum" resultType="long">
+		SELECT COALESCE(sum(num),0) from order_item where order_id in (select id from 
+		`order` where member_id=#{memberId} and status=3)
+	</select>
+
+	<select id="memberOrderTotalFee" resultType="BigDecimal">
+		SELECT COALESCE(sum(fee),0) from
+		`order` where member_id=#{memberId} and status=3;
+	</select>
+
+	<select id="count" resultType="long">
+		SELECT COUNT(*)
+		<include refid="SELECT_ORDER_CONDITION" />
+	</select>
+
+	<delete id="delete" parameterType="java.lang.Long">
+		delete from `order` where id=#{id}
+	</delete>
+
+	<insert id="batchInsert">
+		INSERT INTO `order`(order_no, member_Id, status, pay_type,
+		pay_method,create_time,update_time, finished_time, total_fee,fee,
+		express_fee, express_add_fee,
+		memo, ordered_fee, period_fee,
+		period_count, contact_id, mobile, name, email, pay_time, cancel_time,
+		cancel_reason,
+		wy_code, seller_id, obj_id, obj2_id,
+		is_used_virtual,express,express_no,send_time,receive_time) VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			( #{item.orderNo}, #{item.memberId}, #{item.status}, #{item.payType},
+			#{item.payMethod},#{item.createTime},#{item.updateTime},
+			#{item.finishedTime},
+			#{item.totalFee}, #{item.fee}, #{item.expressFee}, #{item.expressAddFee},
+			#{item.memo}, #{item.orderFee}, #{item.periodFee}
+			,#{item.periodCount}, #{item.contactId}, #{item.mobile},
+			#{item.name}, #{item.email}, #{item.payTime},
+			#{item.cancelTime}, #{item.cancelReason}, #{item.wyCode}, #{item.sellerId},
+			#{item.objId}, #{item.objId2},
+			#{item.isUsedVirtual},#{item.express},#{item.expressNo},#{item.sendTime},#{item.receiveTime});
+		</foreach>
+	</insert>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id"
+		keyColumn="id">
+		INSERT INTO `order`(order_no, member_Id, status, pay_type,
+		pay_method,create_time,update_time, finished_time, total_fee,fee,
+		express_fee, express_add_fee,
+		memo, ordered_fee, period_fee,
+		period_count, contact_id, mobile, name, email, pay_time, cancel_time,
+		cancel_reason,
+		wy_code, seller_id, obj_id, obj2_id,
+		is_used_virtual,express,express_no,send_time,receive_time) VALUES (
+		#{orderNo}, #{memberId}, #{status}, #{payType},
+		#{payMethod},#{createTime},#{updateTime} ,#{finishedTime},
+		#{totalFee}, #{fee}, #{expressFee}, #{expressAddFee}, #{memo},
+		#{orderFee}, #{periodFee},
+		#{periodCount}, #{contactId}, #{mobile}, #{name}, #{email}, #{payTime},
+		#{cancelTime}, #{cancelReason}, #{wyCode},
+		#{sellerId}, #{objId}, #{objId2},
+		#{isUsedVirtual},#{express},#{expressNo},#{sendTime},#{receiveTime});
+	</insert>
+
+	<update id="updateExpress" parameterType="org.itboys.product.entity.mysql.Order">
+		update `order` set update_time = now()
+		<if test="expressNo !=null ">
+			<![CDATA[ , express_no=#{expressNo} ]]>
+		</if>
+		where order_no=#{orderNo}
+	</update>
+
+	<update id="update" parameterType="org.itboys.product.entity.mysql.Order">
+		update `order` set update_time = now()
+		<if test="orderNo !=null and orderNo !=''">
+			<![CDATA[ , order_no=#{orderNo} ]]>
+		</if>
+		<if test="memberId !=null ">
+			<![CDATA[ , member_id=#{memberId} ]]>
+		</if>
+		<if test="status !=null ">
+			<![CDATA[ , status=#{status} ]]>
+		</if>
+		<if test="payType !=null ">
+			<![CDATA[ , pay_type=#{payType} ]]>
+		</if>
+		<if test="payMethod !=null ">
+			<![CDATA[ , pay_method=#{payMethod} ]]>
+		</if>
+		<if test="finishedTime !=null and finishedTime !=''">
+			<![CDATA[ ,finished_time=#{finishedTime} ]]>
+		</if>
+		<if test="totalFee !=null ">
+			<![CDATA[ , total_fee=#{totalFee} ]]>
+		</if>
+		<if test="expressFee !=null ">
+			<![CDATA[ , express_fee=#{expressFee} ]]>
+		</if>
+		<if test="expressAddFee !=null ">
+			<![CDATA[ , express_add_fee=#{expressAddFee} ]]>
+		</if>
+		<if test="memo !=null and memo !=''">
+			<![CDATA[ , memo=#{memo} ]]>
+		</if>
+		<if test="orderFee !=null ">
+			<![CDATA[ , ordered_fee=#{orderFee} ]]>
+		</if>
+		<if test="periodFee !=null ">
+			<![CDATA[ , period_fee=#{periodFee} ]]>
+		</if>
+		<if test="periodCount !=null ">
+			<![CDATA[ , period_count=#{periodCount} ]]>
+		</if>
+		<if test="contactId !=null ">
+			<![CDATA[ , contact_id=#{contactId} ]]>
+		</if>
+		<if test="mobile !=null and mobile !=''">
+			<![CDATA[ , mobile=#{mobile} ]]>
+		</if>
+		<if test="name !=null and name !=''">
+			<![CDATA[ , name=#{name} ]]>
+		</if>
+		<if test="email !=null and email !=''">
+			<![CDATA[ , email=#{email} ]]>
+		</if>
+		<if test=" payTime !=null and payTime !=''">
+			<![CDATA[ , pay_time=#{payTime} ]]>
+		</if>
+		<if test="cancelTime !=null and cancelTime !=''">
+			<![CDATA[ , cancel_time=#{cancelTime} ]]>
+		</if>
+		<if test="cancelReason !=null and cancelReason !='' ">
+			<![CDATA[ , cancel_reason=#{cancelReason} ]]>
+		</if>
+		<if test="wyCode !=null ">
+			<![CDATA[ , wy_code=#{wyCode} ]]>
+		</if>
+		<if test="sellerId !=null ">
+			<![CDATA[ , seller_id=#{sellerId} ]]>
+		</if>
+		<if test="objId !=null and objId !='' ">
+			<![CDATA[ , obj_id=#{objId} ]]>
+		</if>
+		<if test="objId2 !=null and objId2!=''">
+			<![CDATA[ , obj2_id=#{objId2} ]]>
+		</if>
+		<if test="isUsedVirtual !=null ">
+			<![CDATA[ , is_used_virtual=#{isUsedVirtual} ]]>
+		</if>
+		<if test="express !=null and express !=''">
+			<![CDATA[ , express=#{express} ]]>
+		</if>
+		<if test="expressNo !=null ">
+			<![CDATA[ , express_no=#{expressNo} ]]>
+		</if>
+		<if test="sendTime !=null and sendTime !=''">
+			<![CDATA[ , send_time=#{sendTime} ]]>
+		</if>
+		<if test="receiveTime !=null and receiveTime !=''">
+			<![CDATA[ , receive_time=#{receiveTime} ]]>
+		</if>
+		
+		where id = #{id}
+	</update>
+
+	<select id="getOrder" resultMap="RESULT_ORDER_MAP">
+		select id, order_no, member_Id,
+		status, pay_type, pay_method, finished_time, total_fee,create_time,update_time,
+		fee,express_fee, express_add_fee,
+		memo, ordered_fee, period_fee,
+		period_count, contact_id, mobile, name, email, pay_time, cancel_time,
+		cancel_reason,
+		wy_code, seller_id, obj_id, obj2_id,
+		is_used_virtual,express,express_no,send_time,receive_time from `order`
+		where status!=-1 and id=#{id}
+	</select>
+	
+	<update id="updateOrderStatus" parameterType="org.itboys.product.entity.mysql.Order">
+		UPDATE `order` set update_time = now(), status=#{status} where order_no = #{orderNo}
+	</update>
+
+	<select id="findByBrandIds" resultMap="RESULT_ORDER_MAP">
+		select o.id,o.order_no,o.member_id,o.status,o.pay_type,o.pay_method,o.create_time,o.update_time,o.finished_time,o.total_fee,o.fee,o.express_fee,o.express_add_fee,o.memo,o.contact_id,o.mobile,o.name,o.email,o.pay_time,o.cancel_time,o.wy_code,o.seller_id,o.express,o.express_no,o.send_time,o.receive_time  
+		from `order` o where isNull(o.express_no) and o.status!=-1
+		<if test="createTime!='' ">
+				<![CDATA[ AND o.create_time >=  STR_TO_DATE(#{createTime}, '%Y-%m-%d')  ]]>
+		</if>
+		<if test="finishedTime!='' ">
+			<![CDATA[ AND  o.create_time <  ADDDATE(STR_TO_DATE(#{finishedTime}, '%Y-%m-%d'),1) ]]>
+	    </if> 
+		 and o.id in(select oi.order_id from order_item oi where oi.product_id in(select p.id from product p where 
+		 p.brand_id in 
+		     <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+		      #{item} 
+		     </foreach>
+	     )) 
+	</select>
+	
+	<select id="exportOrders" resultMap="RESULT_ORDER_MAP">
+		select o.id,o.order_no,o.member_id,o.status,o.pay_type,o.pay_method,o.create_time,o.update_time,o.finished_time,o.total_fee,o.fee,o.express_fee,o.express_add_fee,o.memo,o.contact_id,o.mobile,o.name,o.email,o.pay_time,o.cancel_time,o.wy_code,o.seller_id,o.express,o.express_no,o.send_time,o.receive_time  
+		from `order` o where o.status=1 and o.id in<foreach item="item" index="index" collection="orderIds" open="(" separator="," close=")">#{item}</foreach> 
+		<if test="createTime!='' and createTime!= null">
+			<![CDATA[ AND o.create_time >=  STR_TO_DATE(#{createTime}, '%Y-%m-%d')  ]]>
+		</if>
+		<if test="finishedTime!='' and finishedTime != null">
+			<![CDATA[ AND  o.create_time <=  ADDDATE(STR_TO_DATE(#{finishedTime}, '%Y-%m-%d'),1) ]]>
+		</if>
+		<if test="sellerIds != null">
+			 AND o.seller_id in<foreach item="item" index="index" collection="sellerIds" open="(" separator="," close=")">#{item}</foreach> 
+		</if>
+		<if test="brandIds != null">
+			 AND o.id in(select oi.order_id from order_item oi where oi.product_id in(select p.id from product p where p.is_deleted=1 and p.brand_id in<foreach item="item" index="index" collection="brandIds" open="(" separator="," close=")">#{item}</foreach>)) 
+		</if>
+	</select>
+
+	<select id="getByIds" resultMap="RESULT_ORDER_MAP">
+		select o.id,o.order_no,o.member_id,o.status,o.pay_type,o.pay_method,o.create_time,o.update_time,o.finished_time,o.total_fee,o.fee,o.express_fee,o.express_add_fee,o.memo,o.contact_id,o.mobile,o.name,o.email,o.pay_time,o.cancel_time,o.wy_code,o.seller_id,o.express,o.express_no,o.send_time,o.receive_time from `order` o where isNull(o.express_no) and isNull(o.express) and o.status=1 and o.id in <foreach item="item" index="index" collection="list" open="(" separator="," close=")">#{item}</foreach>
+	</select>
+	
+	<select id="getStatistics" resultType="org.itboys.product.dto.order.OrderDTO">
+		SELECT SUM(total_fee) AS pfee,COUNT(*) AS numor 
+		<include refid="SELECT_ORDER_STATISTICS" /> 
+	</select>
+	
+	<select id="listStatistics" resultMap="RESULT_ORDER_MAP">
+		SELECT id, order_no, member_Id, status, pay_type, pay_method,
+		finished_time,fee, total_fee, express_fee, express_add_fee,
+		memo,
+		ordered_fee, period_fee, period_count, contact_id, mobile, name,
+		email, pay_time, cancel_time, cancel_reason,
+		wy_code, seller_id,
+		obj_id, obj2_id,
+		is_used_virtual,express,express_no,send_time,receive_time,update_time,create_time
+		<include refid="SELECT_ORDER_STATISTICS" /> 
+		order by id desc
+		<if test="rowStart!=null and pageSize!=null">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+	
+	<select id="countStatistics" resultType="long">
+		SELECT COUNT(*)
+		<include refid="SELECT_ORDER_STATISTICS" />
+	</select>
+	
+	<update id="upStatusIsDelete" parameterType="long">
+		update `order` set status=-1 where id=#{id}
+	</update>
+	
+	<sql id="SELECT_ORDER_STATISTICS">
+		FROM `order` where status!=-1
+		<if test="status !=null ">
+		<![CDATA[ AND status=#{status} ]]>
+		</if>     
+		<if test="createTime!=null ">
+			<![CDATA[ AND create_time >=  STR_TO_DATE(#{createTime}, '%Y-%m-%d')  ]]>
+		</if>
+		<if test="finishedTime!=null ">
+			<![CDATA[ AND  create_time <  ADDDATE(STR_TO_DATE(#{finishedTime}, '%Y-%m-%d'),1) ]]>
+		</if>
+	</sql>
+</mapper>
+

@@ -1,0 +1,265 @@
+<div style="margin: 10px 0;"></div>
+<div id="adzoneSearchForm" style="padding: 5px; height: auto">
+	<div style="margin-bottom: 5px">
+		<a href="#" onclick="addadzone()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增广告位</a>
+	</div>
+	<div>
+		<form id="queryAdzoneForm">
+			广告位名称:<input class="easyui-validatebox" name="filter_S_name" style="width:100px">
+			<a href="javascript:doSearchObject('adzoneTable','queryAdzoneForm')" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
+		</form>
+	</div>
+</div>
+
+
+
+<div id="add_adzone" class="easyui-window" title="广告位管理" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width: 400px; height: 400px; padding: 10px;">
+	<div style="padding: 10px 0 10px 60px">
+		<form id="AdzoneForm" method="post" action="/adzone/adzone/admin/save" name="AdzoneForm">
+			<input name="id" id="adzoneId" type="hidden" value="0" />
+			<table>
+			    <tr>
+					<td>名称</td>
+					<td><input type="text" autoComplete="off" name="name" class="easyui-validatebox" data-options="required:true"></td>
+				</tr>
+				<tr>
+					<td>描述</td>
+					<td><textarea name="desc"  style="width:200px;height:65px;"></textarea></td>
+				</tr>
+				<tr>
+					<td>是否包时</td>
+					<td>
+						<input type="radio" autoComplete="off" name="isTimeBetween"  value="1" />不包时
+						<input type="radio" autoComplete="off" name="isTimeBetween"  value="2"/>包时	
+					</td>
+				</tr>
+				<tr>
+					<td>类型</td>
+					<td>
+					<select name="chargingMode" style="width:140px;" >
+					<option value="self">自运营</option>
+					<option value="cps">按成交效果计费</option>
+					<option value="cpt">按时计费</option>
+					<option value="cpa">按效果计费</option>
+					<option value="cpc">按点击计费</option>
+					<option value="cpm">按千次展现计费</option>
+					</select>
+					</td>
+				</tr>
+				<tr>
+					<td>长</td>
+					<td><input type="text" autoComplete="off" name="length" class="easyui-validatebox"  data-options="required:true,validType:'number'"></td>
+				</tr>
+				<tr>
+					<td>宽</td>
+					<td><input type="text" autoComplete="off" name="width" class="easyui-validatebox" data-options="required:true,validType:'number'"></td>
+				</tr>
+				<tr>
+					<td>投放类型</td>
+					<td>
+						<input type="radio" autoComplete="off" name="isSelf"  value="1" >自己的
+						<input type="radio" autoComplete="off" name="isSelf"  value="0">外站的
+					</td>
+				</tr>
+				<tr>
+					<td>收费金额</td>
+					<td><input type="text" autoComplete="off" name="fee" class="easyui-validatebox" data-options="required:true,validType:'number'"></td>
+				</tr>
+				<tr>
+					<td>计费单位</td>
+					<td>
+					<select name="feeUnit" style="width:140px;" >
+					<option value="year">年</option>
+					<option value="hour">小时</option>
+					<option value="minute">分</option>
+					<option value="number">展现次数</option>
+					</select>
+					</td>
+				</tr>
+				<tr>
+					 <td>&nbsp;</td>
+	            	<td>
+	            		<input type="submit" value="提交"></input>
+	            		<input type="reset" value="重置" ></input>
+	           		</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+
+<table id="adzoneTable" style="width:1180px"></table>
+
+<div id="advertisemenList" class="easyui-window" title="测试load表格" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:1020px; height: 450px; padding: 10px;">
+</div>
+
+<div id="advertisemenItemList" class="easyui-window" title="测试load表格" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:1000px; height: 400px; padding: 10px;">
+</div>
+
+<script>
+	
+	$('#adzoneTable').datagrid({
+		url:'/adzone/adzone/admin/list',
+		toolbar : '#adzoneSearchForm',
+		singleSelect:true,
+		pagination : true,
+		rownumbers:true,
+		columns : [[
+			{field : 'name',title : '名称',width:220},
+			{
+				field:'isTimeBetween',title:'是否包时',width:100,
+				formatter: function(value,row,index){
+					if(row.isTimeBetween==1){
+						return '不包时';
+					}else if(row.isTimeBetween==2)
+						return '包时';
+				}
+			},
+			{
+				field:'status',title:'状态',width:100,
+				formatter: function(value,row,index){
+					if(row.status==1){
+						return '生效';
+					}else if(row.status==0)
+						return '失效';
+				}
+			},
+			{
+				field:'chargingMode',title:'类型',width:100,
+				formatter: function(value,row,index){
+					if(row.chargingMode=="self"){
+						return '自运营';
+					}else if(row.chargingMode=="cps"){
+						return '按成交效果计费';
+					}else if(row.chargingMode=="cpt"){
+						return '按时计费';
+					}else if(row.chargingMode=="cpa"){
+						return '按效果计费';
+					}else if(row.chargingMode=="cpc"){
+						return '按点击计费';
+					}else if(row.chargingMode=="cpm"){
+						return '按千次展现计费';
+					}
+				}
+			},
+			{field : 'length',title : '长',width:50},
+			{field : 'width',title : '宽',width:50},
+			{
+				field:'isSelf',title:'投放类型',width:100,
+				formatter: function(value,row,index){
+					if(row.isSelf==1){
+						return '自己网站';
+					}else if(row.isSelf==0)
+						return '外站';
+				}
+			},
+			{field : 'fee',title : '收费金额',width:100},
+			{
+				field:'feeUnit',title:'计费单位',width:80,
+				formatter: function(value,row,index){
+					if(row.feeUnit=="year"){
+						return '年';
+					}else if(row.feeUnit=="hour"){
+						return '小时';
+					}else if(row.feeUnit=="minute"){
+						return '分';
+					}else if(row.feeUnit=="number"){
+						return '展现次数';
+					}
+				}
+			},
+			{field : 'operate',title : '操作',width:200,
+				formatter : function(value, row, index) {
+					if(row.status==1){
+						return outPutFunction("editAdzone",row.id,"编辑")+outPutFunction("freezeAdzone",row.id,"删除")+outPutFunction("loseAdzone",row.id,"失效")+outPutFunction("showAdvertisementList",row.id,"广告信息");	
+					}else if(row.status==0){
+						return outPutFunction("editAdzone",row.id,"编辑")+outPutFunction("freezeAdzone",row.id,"删除")+outPutFunction("takeAdzone",row.id,"生效")+outPutFunction("showAdvertisementList",row.id,"广告信息");	
+					}
+				}
+			} 
+		]]
+	});
+
+	function showAdvertisementList(catid){
+		var adurl="/adzone/advertisement/vm?adzoneId="+catid;
+		$("#advertisemenList").dialog({   
+			 closed: false,   
+			 cache: false,   
+			 title:"广告",
+			 href: adurl,   
+		     width:1050,
+			 modal: true  
+		});  
+	}
+	
+	function addadzone(){
+		openInputAndClearForm('add_adzone','AdzoneForm');
+		$("#AdzoneForm input[name='isSelf'][value='1']").attr("checked",true);
+		$("#AdzoneForm input[name='isTimeBetween'][value='1']").attr("checked",true);
+		$("#adzoneId").val(0);
+	}
+	
+	function editAdzone(uid) {
+		$.get("/adzone/adzone/getAdzone/"+uid, function(data) {
+			$('#add_adzone').window('open');
+			$("#AdzoneForm").form('load',data);
+		});
+	}
+
+	function freezeAdzone(uid) {
+		$.messager.confirm('广告位管理','确定要删除吗?',function(r){   
+		    if (r){   
+		    	jQuery.post("/adzone/adzone/delete/"+uid,{}, function(data) {
+					if (data>=1) {
+						$("#adzoneTable").datagrid('reload');
+					} else {
+						$.messager.alert('Info', "删除失败", 'info');
+					}
+				});
+		    }   
+		}); 
+	}
+	
+	
+	function loseAdzone(uid) {
+		$.messager.confirm('广告位管理','确定要让失效吗?',function(r){   
+		    if (r){   
+		    	jQuery.post("/adzone/adzone/lose/"+uid,{}, function(data) {
+					if (data>=1) {
+						$("#adzoneTable").datagrid('reload');
+					} else {
+						$.messager.alert('Info', "操作失败", 'info');
+					}
+				});
+		    }   
+		}); 
+	}
+	
+	function takeAdzone(uid) {
+		$.messager.confirm('广告位管理','确定要让生效吗?',function(r){   
+		    if (r){   
+		    	jQuery.post("/adzone/adzone/take/"+uid,{}, function(data) {
+					if (data>=1) {
+						$("#adzoneTable").datagrid('reload');
+					} else {
+						$.messager.alert('Info', "操作失败", 'info');
+					}
+				});
+		    }   
+		}); 
+	}
+
+	$('#AdzoneForm').form({
+		success : function(data) {
+			$('#add_adzone').window('close');
+			var str = 'success';
+			if (data == str) {
+				$("#adzoneTable").datagrid('reload');
+				$(".easyui-validatebox").val('');
+			} else {
+				$.messager.alert('Info', "添加失败", 'info');
+			}
+		}
+	});
+</script>
+

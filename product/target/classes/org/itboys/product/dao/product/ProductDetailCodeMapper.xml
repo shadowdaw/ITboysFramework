@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductDetailCodeMapper">
+	 
+	<select id="getListByProductid" resultType="org.itboys.product.entity.mysql.product.ProductDetailCode" parameterType="long">
+		SELECT id,product_id as productId,category_code_config_id as categoryCodeConfigId,is_change_price as isChangePrice,is_link_stock as isLinkStock 
+		from `product_detail_code` where `product_id` = #{productId}
+	</select>
+	
+   <insert id="batchInsert">
+       INSERT INTO product_detail_code(product_id,`category_code_config_id`,is_change_price)  VALUES 
+        <foreach collection="list" item="item" index="index"  separator=",">
+    		 ( #{item.productId}, #{item.categoryCodeConfigId},#{item.isChangePrice})
+    	</foreach>
+    </insert>
+	
+    <delete id="deleteByProductId" parameterType="long" >
+	    delete from product_detail_code  where product_id=#{productId}
+   </delete>
+   
+   <insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductDetailCode" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+   	insert into product_detail_code(product_id,category_code_config_id,is_link_stock)values(#{productId},#{categoryCodeConfigId},#{isLinkStock})
+   </insert>
+   		  
+</mapper>

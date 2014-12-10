@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductCategoryMapper">
+
+	<sql id="SELECT_PRODUCTCATEGORY_CONDITION">
+		from product_category where is_deleted=1
+		<if test="id!=null">
+			<![CDATA[ and id=#{id}]]>
+		</if>
+		<if test="parentIds !=null">
+			and parent_id in
+			<foreach collection="parentIds" item="item" index="index"
+				open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+		</if>
+		<if test="name!=null and name!=''">
+			<![CDATA[ and name like CONCAT('%',#{name},'%')]]>
+		</if>
+		<if test="parentId!=null">
+			<![CDATA[ and parent_id=#{parentId}]]>
+		</if>
+		<if test="fullIdPath!=null and fullIdPath!=''">
+			<![CDATA[ and full_id_path like CONCAT(#{fullIdPath},'%')]]>
+		</if>
+		<if test="level!=null">
+			<![CDATA[ and level=#{level}]]>
+		</if>
+		<if test="isBottom !=null">
+			<![CDATA[ and is_bottom=#{isBottom}]]>
+		</if>
+		<if test="projectId !=null">
+			<![CDATA[ and `project_id`=#{projectId}]]>
+		</if>
+	</sql>
+	
+	<select id="count" resultType="long" parameterType="map">
+		select count(id) from product_category where parent_id=#{pid}
+	</select>
+	
+	<select id="list" resultType="org.itboys.product.entity.mysql.product.ProductCategory">
+		select id,name,parent_id as parentId,creator,create_time as createTime,updater,update_time as updateTime,level,sort,
+		full_id_path as fullIdPath,is_bottom as isBottom,project_id as projectId,image as image
+		<include refid="SELECT_PRODUCTCATEGORY_CONDITION"/>
+		order by sort asc,full_id_path
+		<if test="rowStart!=null  and pageSize!=null ">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+	
+	<select id="getByAccountId" parameterType="long" resultType="org.itboys.product.entity.mysql.product.ProductCategory">
+		select id,name,parent_id as parentId from product_category where id in(select cat_id from product_category_brand where brand_id=#{brandId}) and is_deleted=1 
+	</select>
+	
+	<select id="getBrandProductCategoryList" resultType="org.itboys.product.dto.product.ProductCategoryDTO">
+		select pc.id as id,pc.full_id_path as fullIdPath,pc.name as name,pcb.brand_id as brandId from product_category pc left join product_category_brand pcb on pc.id=pcb.cat_id and pcb.brand_id=#{brandId}  
+	</select>
+	
+	<select id="findById" parameterType="long" resultType="org.itboys.product.entity.mysql.product.ProductCategory">
+		select id,name,parent_id as parentId,level,sort,`desc`,is_bottom as isBottom,full_id_path as fullIdPath,project_id as projectId,image
+		 from product_category where is_deleted=1 and id=#{id}
+	</select>
+	
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductCategory" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		insert into product_category(name,`desc`,parent_id,creator,create_time,updater,update_time,sort,level,is_deleted,full_id_path,is_bottom,project_id,image) 
+		values(#{name},#{desc},#{parentId},#{creator},now(),#{updater},now(),#{sort},#{level},1,#{fullIdPath},#{isBottom},#{projectId},#{image})
+	</insert>
+	
+	<update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductCategory">
+		update product_category set update_time=now()
+		<if test="updater!=null">
+			<![CDATA[ , updater=#{updater}]]>
+		</if>
+		<if test="name!=null and name!=''">
+			<![CDATA[ , name=#{name}]]>
+		</if>
+		<if test="desc !=null and desc !=''">
+			<![CDATA[ , `desc`=#{desc}]]>
+		</if>
+		<if test="isDeleted!=null">
+			<![CDATA[ , is_deleted=#{isDeleted}]]>
+		</if>
+		<if test="sort!=null">
+			<![CDATA[ , sort=#{sort}]]>
+		</if>
+		<if test="level!=null">
+			<![CDATA[ , level=#{level}]]>
+		</if>
+		<if test="fullIdPath != null and fullIdPath != ''">
+			<![CDATA[ , full_id_path=#{fullIdPath}]]>
+		</if>
+		<if test="isBottom != null ">
+			<![CDATA[ , is_bottom=#{isBottom}]]>
+		</if>
+		<if test="projectId != null ">
+			<![CDATA[ , project_id=#{projectId}]]>
+		</if>
+		<if test="image != null ">
+			<![CDATA[ , image=#{image}]]>
+		</if>
+		where id=#{id} and is_deleted=1
+	</update>
+	
+	<update id="delete" parameterType="long">
+		update product_category set is_deleted=0 where id=#{id} or parent_id=#{id}
+	</update> 
+	
+	<select id="getBasicSort" parameterType="long" resultType="org.itboys.product.entity.mysql.product.ProductCategory">
+		select id,name,full_id_path as fullIdPath from product_category where parent_id=0 and is_deleted=1
+	</select>
+	
+	<select id="getAll" resultType="org.itboys.product.entity.mysql.product.ProductCategory">
+		select id,name,full_id_path as fullIdPath from product_category where is_deleted=1 
+	</select>
+	
+	<select id="getListByIds" resultType="org.itboys.product.entity.mysql.product.ProductCategory">
+		select id,full_id_path as fullIdPath from product_category where id in <foreach item="item" index="index" collection="list" open="(" separator="," close=")">#{item}</foreach>
+	</select>
+</mapper>

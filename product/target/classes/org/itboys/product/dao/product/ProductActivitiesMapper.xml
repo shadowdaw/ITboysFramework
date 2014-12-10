@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductActivitiesMapper">
+	
+	 <resultMap id="PRODUCT_ACTIVITIES_MAP" type="org.itboys.product.entity.mysql.product.ProductActivities">
+		<result property="id" column="id" />
+		<result property="productBrandId" column="product_brand_id" />
+		<result property="keeperId" column="keeper_id" />
+		<result property="activitieName" column="activitie_name" />
+		<result property="activitieText" column="activitie_text" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="sort" column="sort" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="activitieImage" column="activitie_image" />
+		<result property="isActivity" column="is_activity" />
+		<result property="littleLogo" column="little_logo" />
+		<result property="minDiscount" column="min_discount" />
+		<result property="maxDiscount" column="max_discount" />
+		<result property="minPrice" column="min_price" />
+	    <result property="showType" column="show_type" />
+	    <result property="middlePic" column="middle_pic" />
+	 </resultMap>
+	 
+	 <sql id="product_activities_FIELDS">
+	 	product_brand_id,keeper_id,activitie_name,activitie_text,start_time,end_time,sort,is_deleted,activitie_image,is_activity,little_logo,min_discount
+	 	,max_discount,min_price,show_type,middle_pic
+	 </sql>
+	 
+	 <sql id="product_activities_CONDITION">
+	 	from product_activities 
+	 	<where>
+			<if test="productBrandId !=null">
+				<![CDATA[ and product_brand_id=#{productBrandId}]]>
+			</if>
+			<if test="keeperId !=null">
+				<![CDATA[ and keeper_id=#{keeperId}]]>
+			</if>
+			<if test="isDeleted !=null">
+				<![CDATA[ and is_deleted=#{isDeleted}]]>
+			</if>
+			<if test="isActivity !=null">
+				<![CDATA[ and is_activity=#{isActivity}]]>
+			</if>
+			<if test="showType !=null">
+				<![CDATA[ and show_type=#{showType}]]>
+			</if>
+			<if test="activitieName !=null and activitieName != ''">
+				<![CDATA[ and activitie_name=#{activitieName}]]>
+			</if>
+			<if test="activitieText !=null and activitieText !='' ">
+				<![CDATA[ and activitie_text like CONCAT('%',#{activitieText},'%') ]]>
+			</if>
+			<if test="startTime !=null and startTime !=''">
+				<![CDATA[ and start_time >= #{startTime}]]>
+			</if>
+			<if test="endTime !=null and endTime !=''">
+				<![CDATA[ and end_time <= #{endTime}]]>
+			</if>
+			<if test="minDiscount !=null and minDiscount !='' ">
+				<![CDATA[ and min_discount >= #{minDiscount} ]]>
+			</if>
+			<if test="maxDiscount !=null and maxDiscount !='' ">
+				<![CDATA[ and max_discount >= #{maxDiscount} ]]>
+			</if>
+			<if test="minPrice !=null and minPrice !='' ">
+				<![CDATA[ and min_price >= #{minPrice} ]]>
+			</if>
+			<if test="id !=null">
+				<![CDATA[ and id!=#{id}]]>
+			</if>
+		</where>
+	 </sql>
+	 
+	<select id="list"   resultMap="PRODUCT_ACTIVITIES_MAP">
+		select id,
+		<include refid="product_activities_FIELDS" />
+		<include refid="product_activities_CONDITION" />
+		order by sort
+		<if test="rowStart !=null  and pageSize !=null ">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+	
+	<select id="count"   resultType="java.lang.Long">
+		select count(*)
+		<include refid="product_activities_CONDITION" />
+	</select>
+	
+	<select id="findById" parameterType="long"  resultMap="PRODUCT_ACTIVITIES_MAP">
+		select id,<include refid="product_activities_FIELDS"/>
+		 from product_activities where id=#{id}
+	</select>
+	<select id="findByBrandId" parameterType="long"  resultMap="PRODUCT_ACTIVITIES_MAP">
+		select id,<include refid="product_activities_FIELDS"/>
+		 from product_activities where product_brand_id = #{productBrandId}
+	</select>
+	    
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductActivities" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		insert into product_activities(<include refid="product_activities_FIELDS"/>) 
+		values(#{productBrandId},#{keeperId},#{activitieName},#{activitieText},#{startTime},#{endTime},#{sort},#{isDeleted},#{activitieImage},#{isActivity},
+		#{littleLogo},#{minDiscount},#{maxDiscount},#{minPrice},#{showPrice},#{showType},#{middlePic})
+	</insert>
+	
+	<update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductActivities">
+		update product_activities set id=#{id} 
+		<if test="productBrandId !=null">
+				<![CDATA[ , product_brand_id=#{productBrandId}]]>
+			</if>
+			<if test="keeperId !=null">
+				<![CDATA[ , keeper_id=#{keeperId}]]>
+			</if>
+			<if test="isDeleted !=null">
+				<![CDATA[ , is_deleted=#{isDeleted}]]>
+			</if>
+			<if test="isActivity !=null">
+				<![CDATA[ , is_activity=#{isActivity}]]>
+			</if>
+			<if test="showType !=null">
+				<![CDATA[ , show_type=#{showType}]]>
+			</if>
+			<if test="activitieName !=null and activitieName != ''">
+				<![CDATA[ , activitie_name=#{activitieName}]]>
+			</if>
+			<if test="activitieImage !=null and activitieImage != ''">
+				<![CDATA[ , activitie_image=#{activitieImage}]]>
+			</if>
+			<if test="activitieText !=null and activitieText !='' ">
+				<![CDATA[ , activitie_text=#{activitieText} ]]>
+			</if>
+			<if test="littleLogo !=null and littleLogo !='' ">
+				<![CDATA[ , little_logo=#{littleLogo} ]]>
+			</if>
+			<if test="startTime !=null and startTime !=''">
+				<![CDATA[ , start_time = #{startTime}]]>
+			</if>
+			<if test="endTime !=null and endTime !=''">
+				<![CDATA[ , end_time = #{endTime}]]>
+			</if>
+			<if test="minDiscount !=null and minDiscount !='' ">
+				<![CDATA[ , min_discount = #{minDiscount} ]]>
+			</if>
+			<if test="maxDiscount !=null and maxDiscount !='' ">
+				<![CDATA[ , max_discount = #{maxDiscount} ]]>
+			</if>
+			<if test="minPrice !=null and minPrice !='' ">
+				<![CDATA[ , min_price = #{minPrice} ]]>
+			</if>
+			<if test="middlePic !=null and middlePic !='' ">
+				<![CDATA[ , middle_pic = #{middlePic} ]]>
+			</if>
+		where id=#{id} 
+	</update>
+	
+	<delete id="delete" parameterType="long">
+		delete from product_activities  where id=#{id} 
+	</delete>
+	
+	<delete id="deleteByBrandId" parameterType="long">
+	    delete from product_activities where product_brand_id=#{productBrandId}
+	</delete>
+</mapper>

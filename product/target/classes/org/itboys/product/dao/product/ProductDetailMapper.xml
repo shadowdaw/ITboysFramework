@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductDetailMapper">
+	 
+	<select id="getListByProductid" resultType="org.itboys.product.entity.mysql.product.ProductDetail" parameterType="long">
+		SELECT id,product_id as productId,detail_code_id as detailCodeId,value,price,img,stock_size as stockSize
+		from `product_detail` where `product_id` = #{productId}
+	</select>
+	
+	<select id="getById" resultType="org.itboys.product.entity.mysql.product.ProductDetail" parameterType="long">
+		SELECT id,product_id as productId,detail_code_id as detailCodeId,value,price,img,stock_size as stockSize
+		from `product_detail` where `id` = #{id}
+	</select>
+   
+   <insert id="batchInsert">
+       INSERT INTO product_detail(product_id,`detail_code_id`,value,`price`,`img`)  VALUES 
+        <foreach collection="list" item="item" index="index"  separator=",">
+    		 ( #{item.productId}, #{item.detailCodeId},#{item.value},#{item.price},#{item.img})
+    	</foreach>
+    </insert>
+    
+   <insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductDetail" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+       insert into product_detail(product_id,detail_code_id,value,price,img,stock_size)values(#{productId},#{detailCodeId},#{value},#{price},#{img},#{stockSize})
+   </insert>
+	
+    <delete id="deleteByProductId" parameterType="long" >
+	    delete from product_detail  where product_id=#{productId}
+   </delete>
+   
+   <select id="getAll" resultType="org.itboys.product.entity.mysql.product.ProductDetail">
+   	select product_id as productId,stock_size as stockSize from product_detail
+   </select>
+   
+   <select id="catList" resultType="org.itboys.product.entity.mysql.product.ProductDetail">
+   	select product_id as productId,stock_size as stockSize from product_detail where product_id in(select id from product where cat_id in<foreach item="item" index="index" collection="list" open="(" separator="," close=")">#{item}</foreach>)
+   </select>
+   
+   <update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductDetail">
+		update product_detail set id=#{id}
+		<if test="stockSize !=null">
+			<![CDATA[ , stock_size=#{stockSize} ]]>
+		</if>
+		where id=#{id} 
+	</update>
+	
+	<select id="getList" resultType="org.itboys.product.entity.mysql.product.ProductDetail">
+		select id,product_id as productId,detail_code_id as detailCodeId,`value`,`price`,stock_size as stockSize
+		from product_detail
+		<if test="ids!=null">
+			where id in 
+			<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+			  
+</mapper>

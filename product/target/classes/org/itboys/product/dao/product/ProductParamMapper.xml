@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductParamMapper">
+	 
+	<select id="getListByProductId" resultType="org.itboys.product.entity.mysql.product.ProductParam" parameterType="long">
+		SELECT product_id as productId,param_config_id as paramConfigId,value
+		from `product_param` where `product_id` = #{productId}
+	</select>
+	
+   <insert id="batchInsert">
+       INSERT INTO product_param(product_id,`param_config_id`,`value`)  VALUES 
+        <foreach collection="list" item="item" index="index"  separator=",">
+    		 ( #{item.productId}, #{item.paramConfigId},#{item.value})
+    	</foreach>
+    </insert>
+	
+    <delete id="deleteByProductId" parameterType="long" >
+	    delete from product_param  where product_id=#{productId}
+   </delete>	
+   
+   <delete id="deleteByPidAndConfigId" parameterType="map">
+    	delete from product_param  where product_id=#{productId} and param_config_id=#{paramConfigId}
+   </delete>
+   		  
+</mapper>

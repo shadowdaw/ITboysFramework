@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductObjRelMapper">
+
+	<select id="findByProductId" resultType="org.itboys.product.entity.mysql.product.ProductObjRel" parameterType="long">
+		select id,product_id as productId,obj_id as objId,`type` from product_obj_rel where product_id=#{productId}
+	</select>
+	
+	<select id="isExists" resultType="long" parameterType="long">
+		select count(id) from product_obj_rel where product_id=#{productId} and `type`=#{type} and obj_id = #{objId}
+	</select>
+	
+	<select id="findByProType" resultType="org.itboys.product.entity.mysql.product.ProductObjRel" parameterType="long">
+		select id,product_id as productId,obj_id as objId,`type` from product_obj_rel 
+		where product_id=#{productId} and `type`=#{type}
+	</select>
+	
+	<delete id="delete" parameterType="long">
+		delete from product_obj_rel where product_id=#{productId}
+	</delete>
+	
+	<delete id="dltByProType" parameterType="long">
+		delete from product_obj_rel where product_id=#{productId} and `type`=#{type}
+	</delete>
+	
+	<insert id="batchInsert">
+		insert into product_obj_rel(product_id,obj_id,`type`) values
+		<foreach collection="list" item="item" index="index"  separator=",">
+    		 ( #{item.productId}, #{item.objId}, #{item.type})
+    	</foreach>	
+		
+	</insert>
+</mapper>

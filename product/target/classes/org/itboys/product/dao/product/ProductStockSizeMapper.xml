@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductStockSizeMapper">
+
+	 <resultMap id="productStockSizeRM"    type="org.itboys.product.entity.mysql.product.ProductStockSize" >
+	    <result property="id" column="id"  />
+	    <result property="productId"   column="product_id" />
+	    <result property="detailCodeId1"  column="detail_codeId1" />
+	    <result property="detailCodeId2"   column="detail_codeId2" />
+	    <result property="detailCodeId3"   column="detail_codeId3" />
+	    <result property="detailCodeId4"   column="detail_codeId4" />
+	    <result property="stockSize"   column="stock_size" />
+	  </resultMap>
+	  
+	    <update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductStockSize" >
+		update product_stock_size set id=#{id}
+		<if test="productId !=null and productId !=''">
+			<![CDATA[ , product_id=#{productId}]]>
+		</if>
+		<if test="detailCodeId1 !=null and detailCodeId1 !=''">
+			<![CDATA[ , detail_codeId1=#{detailCodeId1}]]>
+		</if>
+		<if test="detailCodeId2 !=null and detailCodeId2 !=''">
+			<![CDATA[ , detail_codeId2=#{detailCodeId2}]]>
+		</if>
+		<if test="detailCodeId3 !=null and detailCodeId3 !=''">
+			<![CDATA[ , detail_codeId3=#{detailCodeId3}]]>
+		</if>
+		<if test="detailCodeId4 !=null and detailCodeId4 !=''">
+			<![CDATA[ , detail_codeId4=#{detailCodeId4}]]>
+		</if>
+		<if test="stockSize !=null and stockSize !=''">
+			<![CDATA[ , stock_size=#{stockSize}]]>
+		</if>
+		where id=#{id}
+		</update>
+	  
+	  <insert id="batchInsert">
+	  	insert into product_stock_size(product_id,detail_codeId1,detail_codeId2,detail_codeId3,detail_codeId4,stock_size)values
+	  		<foreach collection="list" item="item" index="index"  separator=",">
+	  			(#{item.productId},#{item.detailCodeId1},#{item.detailCodeId2},#{item.detailCodeId3},#{item.detailCodeId4},#{item.stockSize})
+	  		</foreach>
+	  </insert>
+	  
+	  <select id="stockSize" parameterType="map" resultMap="productStockSizeRM">
+	      select id,product_id,detail_codeId1,detail_codeId2,stock_size from product_stock_size where product_id=#{productId} and detail_codeId1=#{colorId} and detail_codeId2=#{sizeId}
+	  </select>
+	  
+	  <select id="getListByProductid" parameterType="long" resultMap="productStockSizeRM">
+	      select id,product_id,detail_codeId1,detail_codeId2,stock_size from product_stock_size where product_id=#{productId}
+	  </select>
+	  
+	  <delete id="delByProductId" parameterType="long">
+	      delete from product_stock_size where product_id=#{productId}
+	  </delete>
+	  
+	  <update id="updateStockSize" parameterType="long">
+	  	update product_stock_size set stock_size=stock_size-#{buyNum} where product_id=#{productId} and detail_codeId1=#{colorId} and detail_codeId2=#{sizeId} and stock_size <![CDATA[ >= ]]> #{buyNum} 
+	  </update>
+	  
+	   <update id="updatePlusStockSize" parameterType="long">
+	  	update product_stock_size set stock_size=stock_size+#{buyNum} where product_id=#{productId} and detail_codeId1=#{colorId} and detail_codeId2=#{sizeId} and stock_size <![CDATA[ >= ]]> #{buyNum} 
+	  </update>
+	  
+	  
+	  
+</mapper>

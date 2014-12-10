@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductCategoryCodeConfigMapper">
+
+	
+	<select id="getListByCatid" resultType="org.itboys.product.entity.mysql.product.ProductCategoryCodeConfig">
+		select id,value,cat_id as catId,type
+		from product_category_code_config where cat_id = #{catId}
+	</select>
+	
+	<select id="getListByCatidAndType" resultType="org.itboys.product.entity.mysql.product.ProductCategoryCodeConfig">
+		select id,value,cat_id as catId,type
+		from product_category_code_config where cat_id = #{catId} and type=#{type}
+	</select>
+	
+	<select id="findById" parameterType="long" resultType="org.itboys.product.entity.mysql.product.ProductCategoryCodeConfig">
+		select id,value,cat_id as catId,type
+		 from product_category_code_config where id=#{id}
+	</select>
+	
+	
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.product.ProductCategoryCodeConfig" useGeneratedKeys="true" keyProperty="id"  keyColumn="id">
+		insert into product_category_code_config(value,cat_id,type) 
+		values(#{value},#{catId},#{type})
+	</insert>
+	
+	<update id="update" parameterType="org.itboys.product.entity.mysql.product.ProductCategoryCodeConfig">
+		update product_category_code_config set id=#{id}
+		<if test="value !=null and value !=''">
+			<![CDATA[ , value=#{value}]]>
+		</if>
+		<if test="type !=null ">
+			<![CDATA[ , type=#{type}]]>
+		</if>
+		where id=#{id} 
+	</update>
+	
+	<delete id="delete" parameterType="long">
+		delete from product_category_code_config  where id=#{id} 
+	</delete>
+	
+	<select id="getAllList" resultType="org.itboys.product.entity.mysql.product.ProductCategoryCodeConfig">
+		select id,value,cat_id as catId,type from product_category_code_config 
+	</select>
+</mapper>

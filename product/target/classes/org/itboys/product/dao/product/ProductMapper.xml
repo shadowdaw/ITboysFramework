@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.product.ProductMapper">
+
+	<!-- 商品基本信息resultMap -->
+	<resultMap id="ProductMap" type="org.itboys.product.entity.mysql.product.Product">
+		<result property="id" column="id" />
+		<result property="adminUserId" column="admin_user_id" />
+		<result property="shopId" column="shop_id" />
+		<result property="shopCatId" column="shop_cat_id" />
+		<result property="name" column="name" />
+		<result property="price" column="price" />
+		<result property="discountPrice" column="discount_price" />
+		<result property="marketPrice" column="market_price" />
+		<result property="detailImage" column="detail_image" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="brandId" column="brand_id" />
+		<result property="catId" column="cat_id" />
+		<result property="type" column="type" />
+		<result property="fullCatidPath" column="full_catid_path" />
+		<result property="type" column="type" />
+		<result property="creator" column="creator" />
+		<result property="createTime" column="create_time" />
+		<result property="updater" column="updater" />
+		<result property="updateTime" column="update_time" />
+		<result property="modele" column="modele" />
+		<result property="createFrom" column="create_from" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="isNew" column="is_new" />
+		<result property="weight" column="weight" />
+		<result property="maxNum" column="max_num" />
+		<result property="isRecommend" column="is_recommend" />
+		<result property="fied1" column="fied1" />
+		<result property="fied2" column="fied2" />
+		<result property="fied3" column="fied3" />
+		<result property="fied4" column="fied4" />
+		<result property="fied5" column="fied5" />
+		<result property="score" column="score" />
+		<result property="listImage" column="list_image" />
+		<result property="catName" column="cat_name" />
+		<result property="status" column="status" />
+		<result property="productStore" column="product_store" />
+	</resultMap>
+
+	<!-- 商品及其扩展信息接口DTO的resultMap 继承ProductMap -->
+	<resultMap id="ProductResultRM" type="org.itboys.product.dto.product.ProductResult"
+		extends="ProductMap">
+		<result property="buyedCount" column="buyed_count" />
+		<result property="commentCount" column="comment_count" />
+		<result property="viewCount" column="view_count" />
+		<result property="collectCount" column="collect_count" />
+		<result property="catName" column="cat_name" />
+		<result property="goodCommentCount" column="good_comment_count" />
+		<result property="middleCommentCount" column="middle_comment_count" />
+		<result property="badCommentCount" column="bad_comment_count" />
+	</resultMap>
+
+	<select id="getByBrandId" resultMap="ProductMap" parameterType="long">
+		select id,name,price,discount_price,detail_image,brand_id,cat_id from
+		product where brand_id=#{id} and is_deleted=1
+	</select>
+
+	<sql id="PRODUCT_QUERY_CONDITION">
+		from `product` p left join product_count pe on p.id = pe.product_id
+		where p.is_deleted!=0
+		<if test="ByMobile != null ">
+			and p.type != 2
+		</if>
+		<if test="shopId != null  ">
+				<![CDATA[AND  p.shop_id = #{shopId}  ]]>
+		</if>
+		<if test="catId!= null  ">
+				<![CDATA[AND  p.cat_id = #{catId}  ]]>
+		</if>
+		<if test="shopCatId != null  ">
+				<![CDATA[AND  p.shop_cat_id = #{shopCatId}  ]]>
+		</if>
+		<if test="isDeleted != null  ">
+				<![CDATA[AND  p.is_deleted = #{isDeleted}  ]]>
+		</if>
+		<if test="isNew != null  ">
+				<![CDATA[AND  p.is_new = #{isNew}  ]]>
+		</if>
+		<if test="weight != null  ">
+				<![CDATA[AND  p.weight = #{weight}  ]]>
+		</if>
+		<if test="maxNum != null  ">
+				<![CDATA[AND  p.max_num = #{maxNum}  ]]>
+		</if>
+		<if test="isRecommend != null  ">
+				<![CDATA[AND  p.is_recommend = #{isRecommend}  ]]>
+		</if>
+		<if test="fied1 != null  and fied1 !=''">
+				<![CDATA[AND p.fied1 like concat('%',#{fied1},'%')  ]]>
+		</if>
+		<if test="fied3 != null  and fied3 !=''">
+				<![CDATA[AND  p.fied3 = #{fied3}  ]]>
+		</if>
+		<if test="status != null">
+				<![CDATA[AND  p.status = #{status}  ]]>
+		</if>
+		<if test="productStore != null">
+				<![CDATA[AND  p.product_store = #{productStore}  ]]>
+		</if>
+		<if test="fullCatidPath !=null and fullCatidPath !=''">
+				<![CDATA[ and p.full_catid_path like CONCAT(#{fullCatidPath},'%')]]>
+		</if>
+		<if test="keyword !=null and keyword !=''">
+				<![CDATA[ and (p.id IN (SELECT product_id FROM product_keyword  WHERE  keyword like concat('%',#{keyword},'%')) or  p.name like concat('%',#{name},'%')) ]]>
+		</if>
+		<if test="type != null  ">
+				<![CDATA[ AND p.type = #{type} ]]>
+		</if>
+		<if test="brandId != null  ">
+				<![CDATA[ AND p.brand_id = #{brandId} ]]>
+		</if>
+		<if test="brandName!= null  ">
+				<![CDATA[ and p.brand_id in (select id from product_brand where name like concat('%',#{brandName},'%'))]]>
+		</if>
+		<if test="name != null and name != '' and (keyword==null or  keyword=='')">
+				<![CDATA[AND p.name like concat('%',#{name},'%')  ]]>
+		</if>
+		<if test="minPrice != null  ">
+				<![CDATA[ AND p.price >=#{minPrice} ]]>
+		</if>
+		<if test="maxPrice != null ">
+				<![CDATA[ AND p.price <=#{maxPrice} ]]>
+		</if>
+		<if test="identicalPrice!= null "><!-- 价格相同的商品 -->
+				<![CDATA[ AND p.price = #{identicalPrice} ]]>
+		</if>
+		<if test="modele  != null and modele !=''">
+	          <![CDATA[AND p.modele like concat('%',#{modele},'%')  ]]>
+		</if>
+		<if test="startTime  != null and startTime !=''">
+				<![CDATA[ AND p.start_time >= #{startTime} ]]>
+		</if>
+		<!-- 条件是这个时间在起始时间与结束时间之间 -->
+		<if test="nowTime!=null and nowTime!=''">
+			<![CDATA[ and p.end_time >= #{nowTime} and #{nowTime}>=p.start_time]]>
+		</if>
+		<if test="creator  != null ">
+				<![CDATA[ AND p.creator = #{creator} ]]>
+		</if>
+		<if test="id  != null ">
+				<![CDATA[ AND p.id = #{id} ]]>
+		</if>
+		<if test="ids !=null">
+			AND p.id in
+			<foreach item="item" index="index" collection="ids" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="catIds !=null">
+			AND p.cat_id in
+			<foreach item="item" index="index" collection="catIds" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="hasFied != null  and hasFied !=''">
+				<![CDATA[AND  p.fied3 is not null AND p.fied3 !=''  ]]>
+		</if>
+	</sql>
+
+	<select id="findById" resultMap="ProductResultRM" parameterType="long">
+		SELECT
+		p.id,p.name,p.price,p.discount_price,p.detail_image,p.start_time,p.end_time,p.cat_id,p.brand_id,p.type,p.modele,p.market_price,p.score,
+		p.is_deleted,p.create_from,p.shop_id,p.shop_cat_id,p.fied1,p.fied2,p.fied3,p.fied4,p.fied5,p.status,p.is_recommend,p.creator,p.is_new,p.weight,p.max_num,p.list_image,
+		p.product_store,(select pc.name from product_category pc where
+		pc.id=p.cat_id) as cat_name,
+		pe.buyed_count,pe.view_count
+		,pe.collect_count,pe.good_comment_count,
+		pe.middle_comment_count,pe.bad_comment_count,pe.comment_count
+		from
+		product p left join product_count pe on p.id = pe.product_id
+		where p.id
+		= #{id}
+	</select>
+
+	<select id="findProductById" resultMap="ProductMap"
+		parameterType="long">
+		SELECT
+		p.id,p.name,p.price,p.discount_price,p.detail_image,p.start_time,p.end_time,p.cat_id,p.brand_id,p.type,p.modele,p.market_price,p.score,
+		p.is_deleted,p.create_from,p.create_time,p.shop_id,p.shop_cat_id,p.fied1,p.fied2,p.fied3,p.fied4,p.fied5,p.status,p.is_recommend,p.creator,p.is_new,p.weight,p.max_num,
+		p.list_image,p.product_store,(select pc.name from product_category pc
+		where pc.id=p.cat_id) as cat_name,
+		pe.buyed_count,pe.view_count
+		,pe.collect_count,pe.good_comment_count,
+		pe.middle_comment_count,pe.bad_comment_count,pe.comment_count
+		from
+		product p left join product_count pe on p.id = pe.product_id
+		where p.id
+		= #{id}
+	</select>
+	<select id="findSellProductById" resultMap="ProductMap"
+		parameterType="long">
+		SELECT
+		p.id,p.name,p.price,p.discount_price,p.detail_image,p.start_time,p.end_time,p.cat_id,p.brand_id,p.type,p.modele,p.market_price,p.score,
+		p.is_deleted,p.create_from,p.create_time,p.shop_id,p.shop_cat_id,p.fied1,p.fied2,p.fied3,p.fied4,p.fied5,p.status,p.is_recommend,p.creator,p.is_new,p.weight,p.max_num,
+		p.list_image,p.product_store from product p where p.id = #{id} and
+		is_deleted=1
+	</select>
+
+	<select id="countCount" resultType="long" parameterType="map">
+		SELECT
+		count(*) from product p left join product_count pc on p.id =
+		pc.product_id and p.is_deleted=1
+	</select>
+
+	<select id="count" resultType="long" parameterType="map">
+		SELECT count(*)
+		<include refid="PRODUCT_QUERY_CONDITION" />
+	</select>
+
+	<select id="listCount" resultType="org.itboys.product.entity.mysql.product.Product">
+		select p.id as id,p.name as
+		name,pc.buyed_count as buyedCount,pc.view_count as viewCount from
+		product p left join product_count pc on p.id = pc.product_id and
+		p.is_deleted=1
+	</select>
+
+	<select id="list" resultMap="ProductResultRM" parameterType="map">
+		<![CDATA[  
+			SELECT p.id,p.name,p.price,p.discount_price,p.detail_image,p.start_time,p.end_time,
+			(select pc.name from product_category pc where pc.id=p.cat_id) as cat_name,
+			p.cat_id,p.brand_id,p.type,p.modele,p.market_price,p.score,p.product_store,
+			p.is_deleted,p.create_from,p.status,p.shop_id,p.shop_cat_id,p.create_time,p.update_time,p.creator,p.fied1,p.fied2,p.fied3,p.fied4,p.fied5,p.is_recommend,is_new,
+			p.list_image,p.weight,p.max_num,pe.buyed_count,pe.view_count ,pe.collect_count,pe.good_comment_count
+			,pe.middle_comment_count,pe.bad_comment_count,pe.comment_count
+		  ]]>
+		<include refid="PRODUCT_QUERY_CONDITION" />
+		<if test="orderByKey == null or orderByKey == ''">
+			<![CDATA[  order by p.is_recommend desc,p.start_time desc,p.is_new desc,p.product_store desc ]]>
+		</if>
+		<!-- 排序的话根据自己的需要在自己类里面写，不要在这里直接加了，加多了对其他项目有影响 -->
+		<if test="orderByKey != null and orderByKey != ''">
+			<![CDATA[  order by ${orderByKey},p.product_store desc ]]>
+		</if>
+
+		<if test="rowStart!=null  and pageSize!=null ">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+
+	<select id="getRand5Product" resultMap="ProductResultRM"
+		parameterType="long">
+		SELECT id,name,price,market_price,detail_image FROM
+		product where cat_id = #{catId} and
+		id != #{id} ORDER BY RAND() LIMIT 4
+	</select>
+
+
+	<insert id="insert" parameterType="org.itboys.product.entity.mysql.product.Product" useGeneratedKeys="true"
+		keyProperty="id" keyColumn="id">
+		INSERT INTO
+		product(shop_id,shop_cat_id,name,price,discount_price,detail_image,start_time,end_time,cat_id,type,brand_id,modele,market_price,create_from,full_catid_path,
+		fied1,fied2,fied3,fied4,fied5,is_recommend,is_deleted,creator,create_time,updater,update_time,score,is_new,weight,max_num,list_image,status,product_store)
+		VALUES
+		(#{shopId},#{shopCatId},#{name},#{price},#{discountPrice},#{detailImage},#{startTime},#{endTime},#{catId},#{type},#{brandId},#{modele},#{marketPrice},#{createFrom},#{fullCatidPath},
+		#{fied1},#{fied2},#{fied3},#{fied4},#{fied5},#{isRecommend},#{isDeleted},
+		#{creator},now(),#{updater},now(),#{score},#{isNew},#{weight},#{maxNum},#{listImage},#{status},#{productStore})
+		<selectKey keyProperty="id" resultType="long" order="AFTER">
+			SELECT
+			LAST_INSERT_ID();
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterType="org.itboys.product.entity.mysql.product.Product">
+		update product set update_time=now()
+		<if test="updater !=null">
+			<![CDATA[ , updater=#{updater} ]]>
+		</if>
+		<if test="isDeleted !=null">
+			<![CDATA[ , is_deleted=#{isDeleted} ]]>
+		</if>
+		<if test="name !=null and name !=''">
+		<![CDATA[ , name=#{name} ]]>
+		</if>
+		<if test="price!=null">
+			<![CDATA[ , price=#{price} ]]>
+		</if>
+		<if test="isRecommend !=null">
+			<![CDATA[ , is_recommend=#{isRecommend} ]]>
+		</if>
+		<if test="marketPrice !=null ">
+			<![CDATA[ , market_price=#{marketPrice} ]]>
+		</if>
+		<if test="discountPrice!=null ">
+			<![CDATA[ ,discount_price=#{discountPrice} ]]>
+		</if>
+		<if test="catId!=null">
+			<![CDATA[ ,cat_id=#{catId} ]]>
+		</if>
+		<if test="shopId!=null">
+			<![CDATA[ ,shop_id=#{shopId} ]]>
+		</if>
+		<if test="shopCatId !=null">
+			<![CDATA[ ,shop_cat_id=#{shopCatId} ]]>
+		</if>
+		<if test="brandId !=null ">
+			<![CDATA[ , brand_id=#{brandId} ]]>
+		</if>
+		<if test="detailImage!=null and detailImage!=''">
+			<![CDATA[ , detail_image=#{detailImage} ]]>
+		</if>
+		<if test="startTime!=null and startTime!=''">
+			<![CDATA[ , start_time=#{startTime} ]]>
+		</if>
+		<if test="endTime!=null and endTime!=''">
+			<![CDATA[ , `end_time`=#{endTime} ]]>
+		</if>
+		<if test="modele !=null and modele !=''">
+			<![CDATA[ , `modele`=#{modele} ]]>
+		</if>
+		<if test="type !=null ">
+			<![CDATA[ , `type`=#{type} ]]>
+		</if>
+		<if test="fullCatidPath !=null and fullCatidPath !=''">
+			<![CDATA[ , `full_catid_path`=#{fullCatidPath} ]]>
+		</if>
+		<if test="fied1 !=null and fied1 !=''">
+			<![CDATA[ , `fied1`=#{fied1} ]]>
+		</if>
+		<if test="fied2 !=null and fied2 !=''">
+			<![CDATA[ , `fied2`=#{fied2} ]]>
+		</if>
+		<if test="fied3 !=null and fied3 !=''">
+			<![CDATA[ , `fied3`=#{fied3} ]]>
+		</if>
+		<if test="fied4 !=null and fied4 !=''">
+			<![CDATA[ , `fied4`=#{fied4} ]]>
+		</if>
+		<if test="fied5 !=null and fied5 !=''">
+			<![CDATA[ , `fied5`=#{fied5} ]]>
+		</if>
+		<if test="score !=null ">
+			<![CDATA[ , `score`=#{score} ]]>
+		</if>
+		<if test="weight !=null ">
+			<![CDATA[ , weight=#{weight} ]]>
+		</if>
+		<if test="maxNum !=null ">
+			<![CDATA[ , max_num=#{maxNum} ]]>
+		</if>
+		<if test="listImage !=null and listImage !=''">
+			<![CDATA[ , list_image=#{listImage} ]]>
+		</if>
+		<if test="createFrom !=null and createFrom !=''">
+			<![CDATA[ , create_from=#{createFrom} ]]>
+		</if>
+		<if test="status !=null ">
+			<![CDATA[ , status=#{status} ]]>
+		</if>
+		<if test="productStore !=null ">
+			<![CDATA[ , product_store=#{productStore} ]]>
+		</if>
+		where id=#{id} and is_deleted !=0
+	</update>
+
+	<update id="delete" parameterType="long">
+		update product set
+		is_deleted=0 where id=#{id}
+	</update>
+
+	<update id="deleteByCreator" parameterType="long">
+		update product set
+		is_deleted=0 where creator=#{id}
+	</update>
+
+	<select id="getListByCatId" resultMap="ProductResultRM"
+		parameterType="long">
+		select
+		id,shop_id,shop_cat_id,name,price,detail_image,list_image,brand_id,discount_price
+		from product
+		where cat_id=#{catId} and is_deleted=1
+	</select>
+
+	<select id="catList" resultMap="ProductMap">
+		select id,name,price,discount_price,detail_image from product where id
+		in(select product_id from team_buy) and cat_id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">#{item}</foreach>
+	</select>
+
+	<select id="getListById" resultMap="ProductMap">
+		select id,name,price,discount_price,detail_image from product where
+		is_deleted=1 and id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">#{item}</foreach>
+	</select>
+
+	<update id="updateStockSize" parameterType="long">
+		update product set product_store=product_store-#{buyNum} where
+		id=#{productId} and product_store <![CDATA[ > ]]>
+		#{buyNum}
+	</update>
+
+	<update id="updatePlusStockSize" parameterType="long">
+		update product
+		set product_store=product_store+#{buyNum} where
+		id=#{productId}
+	</update>
+
+	<select id="getAll" resultMap="ProductMap">
+		select
+		id,name,price,discount_price,market_price,detail_image,start_time,brand_id,weight,product_store,fied1,fied2,fied3,fied4,fied5
+		from product where is_deleted=1
+	</select>
+
+	<select id="countMap" resultType="long" parameterType="map">
+		SELECT count(*) from product p where p.is_deleted=1
+		<if test="catId!= null  ">
+				<![CDATA[AND  p.cat_id = #{catId}  ]]>
+		</if>
+		<if test="shopId!= null  ">
+				<![CDATA[AND  p.shop_id = #{shopId}  ]]>
+		</if>
+		<if test="shopCatId!= null  ">
+				<![CDATA[AND  p.shop_cat_id = #{shopCatId}  ]]>
+		</if>
+		<if test="fied1 != null  and fied1 !=''">
+				<![CDATA[AND p.fied1 like concat('%',#{fied1},'%')  ]]>
+		</if>
+		<if test="fied3 != null  and fied3 !=''">
+				<![CDATA[AND  p.fied3 = #{fied3}  ]]>
+		</if>
+		<if test="name != null  and name !=''">
+				<![CDATA[AND  p.name = #{name}  ]]>
+		</if>
+		<if test="brandId != null  ">
+				<![CDATA[ AND p.brand_id = #{brandId} ]]>
+		</if>
+	</select>
+
+	<select id="listMap" resultMap="ProductMap" parameterType="map">
+		select
+		id,name,price,discount_price,market_price,detail_image,start_time,brand_id,weight,product_store
+		from product where is_deleted=1
+		<if test="catId!= null  ">
+				<![CDATA[AND  cat_id = #{catId}  ]]>
+		</if>
+		<if test="shopId!= null  ">
+				<![CDATA[AND  shop_id = #{shopId}  ]]>
+		</if>
+		<if test="shopCatId!= null  ">
+				<![CDATA[AND  shop_cat_id = #{shopCatId}  ]]>
+		</if>
+		<if test="fied1 != null  and fied1 !=''">
+				<![CDATA[AND fied1 like concat('%',#{fied1},'%')  ]]>
+		</if>
+		<if test="fied3 != null  and fied3 !=''">
+				<![CDATA[AND  fied3 = #{fied3}  ]]>
+		</if>
+		<if test="name != null  and name !=''">
+				<![CDATA[AND  name like concat('%',#{name},'%')   ]]>
+		</if>
+		<if test="brandId != null  ">
+				<![CDATA[ AND brand_id = #{brandId} ]]>
+		</if>
+		<if test="rowStart !=null and pageSize !=null">
+			limit #{rowStart},#{pageSize}
+		</if>
+	</select>
+
+	<select id="getSampleProduct" resultMap="ProductMap"
+		parameterType="bigDecimal">
+		select
+		id,name,price,discount_price,market_price,detail_image,start_time,brand_id,weight,product_store
+		from product where is_deleted=1 and discount_price <![CDATA[ > ]]>
+		#{lessPrice} and discount_price <![CDATA[ < ]]>
+		#{morePrice}
+	</select>
+
+	<select id="getTeamBuyProducts" resultMap="ProductMap">
+		select
+		id,name,price,discount_price,market_price,detail_image,start_time,brand_id,weight,product_store
+		from product where fied1=1 and is_deleted=1
+		<if test="rowStart !=null and pageSize !=null">
+			limit #{rowStart},#{pageSize}
+		</if>
+	</select>
+
+	<select id="getRecommendProducts" resultMap="ProductMap">
+		select
+		id,name,price,discount_price,market_price,detail_image,start_time,brand_id,weight,product_store
+		from product where fied2=1 and fied3=0 and is_deleted=1
+		<if test="rowStart !=null and pageSize !=null">
+			limit #{rowStart},#{pageSize}
+		</if>
+	</select>
+
+	<select id="findRecommend" resultMap="ProductMap">
+		select
+		id,name,price,discount_price,market_price,detail_image,start_time,brand_id,weight,product_store
+		from product where is_recommend = 2 and is_deleted=1
+		<if test="rowStart !=null and pageSize !=null">
+			limit #{rowStart},#{pageSize}
+		</if>
+	</select>
+
+	<select id="getFittings" resultMap="ProductMap" parameterType="map">
+		select
+		id,name,price,discount_price,market_price,detail_image,start_time,brand_id,weight,product_store
+		from product where fied2=1 and is_recommend=2 and is_deleted=1
+		<if test="brandId != null  ">
+			<![CDATA[ AND brand_id = #{brandId} ]]>
+		</if>
+		<if test="rowStart !=null and pageSize !=null">
+			limit #{rowStart},#{pageSize}
+		</if>
+	</select>
+
+	<select id="getConceptCar" resultMap="ProductMap">
+		select
+		id,name,price,discount_price,market_price,detail_image,start_time,brand_id,weight,product_store
+		from product where fied2=2 and is_deleted=1
+		<if test="rowStart !=null and pageSize !=null">
+			limit #{rowStart},#{pageSize}
+		</if>
+	</select>
+
+	<select id="getWillSell" resultMap="ProductMap" parameterType="map">
+		select
+		id,name,price,discount_price,market_price,detail_image,start_time,brand_id,weight,product_store
+		from product where fied4=2 and is_deleted=1
+		<if test="brandId != null  ">
+			<![CDATA[ AND brand_id = #{brandId} ]]>
+		</if>
+	</select>
+
+	<select id="listMapByTag" resultMap="ProductResultRM" parameterType="map">
+		select p.*,pe.* from product p LEFT JOIN product_count pe on p.id=pe.product_id
+		left join products_tags t
+		on p.id =
+		t.product_id
+		where p.is_deleted !=0
+		<if test="tagId != null and tagId != ''">
+			and t.tag_id = #{tagId}
+		</if>
+		order by update_time desc
+		<if test="rowStart !=null and pageSize !=null">
+			limit #{rowStart},#{pageSize}
+		</if>
+	</select>
+
+	<select id="countMapByTag" resultType="long" parameterType="map">
+		select count(*) from product p
+		left join products_tags t
+		on p.id =
+		t.product_id
+		where p.is_deleted !=0
+		<if test="tagId != null and tagId != ''">
+			and t.tag_id = #{tagId}
+		</if>
+	</select>
+
+	<select id="findHotProduct" resultMap="ProductMap">
+		select p.id,p.name,p.price,p.market_price,p.detail_image from product
+		p
+		left join product_count pc on p.id = pc.product_id 
+		where where p.is_deleted !=0 
+		order by
+		pc.buyed_count
+		desc
+		<if test="rowStart !=null and pageSize !=null">
+			limit #{rowStart},#{pageSize}
+		</if>
+	</select>
+	<!-- 渭南电商 -->
+	<select id="distanceList" parameterType="map"  resultMap="ProductMap">
+		select  id,shop_id,shop_cat_id,name,price,discount_price,detail_image,start_time,end_time,cat_id,type,brand_id,modele,market_price,create_from,full_catid_path,
+		fied1,fied2,fied3,fied4,fied5,is_recommend,is_deleted,creator,create_time,updater,update_time,score,is_new,weight,max_num,list_image,status,product_store,
+			 (2*ATAN2(SQRT(SIN((#{latitude}-fied5)*PI()/180/2)   
+	        *SIN((#{latitude}-fied5)*PI()/180/2)+   
+	        COS(fied5*PI()/180)*COS(#{latitude}*PI()/180)   
+	        *SIN((#{longitude}-fied3)*PI()/180/2)   
+	        *SIN((#{longitude}-fied3)*PI()/180/2)),   
+	        SQRT(1-SIN((#{latitude}-fied5)*PI()/180/2)   
+	        *SIN((#{latitude}-fied5)*PI()/180/2)   
+	        +COS(fied5*PI()/180)*COS(#{latitude}*PI()/180)   
+	        *SIN((#{longitude}-fied3)*PI()/180/2)   
+	        *SIN((#{longitude}-fied3)*PI()/180/2))))*6378140 as `fied4`
+		from `product` where is_deleted=1 
+		<if test="catIds !=null">
+			AND cat_id in
+			<foreach item="item" index="index" collection="catIds" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+				order by `fied4` asc
+		<if test="rowStart!=null and pageSize!=null">
+				<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	</select>
+
+</mapper>

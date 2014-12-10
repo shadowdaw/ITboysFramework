@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd"
+	default-lazy-init="true">
+	
+	<bean id="orderMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.order.OrderMapper"/>
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="orderItemMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.order.OrderItemMapper"/>
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="cartItemMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.order.CartItemMapper"/>
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="receiveAddressMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.order.ReceiveAddressMapper"/>
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="orderPayRecordMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.order.OrderPayRecordMapper"/>
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	
+	<bean id="productCategoryBrandMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductCategoryBrandMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productBrandMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductBrandMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" /> 
+	</bean>
+	<bean id="productCategoryMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductCategoryMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productCategoryCodeConfigMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductCategoryCodeConfigMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productCategoryConfigMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductCategoryConfigMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productParamConfigMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductParamConfigMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productCountMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductCountMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productExtMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductExtMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productTextMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductTextMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productImagesMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductImagesMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productDetailCodeMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductDetailCodeMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productDetailMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductDetailMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productParamMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductParamMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productKeywordMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductKeywordMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productObjRelMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductObjRelMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	<bean id="productCommentMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductCommentMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	
+	<bean id="productTagMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductTagMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	
+	<bean id="productTagRelMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductTagRelMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	
+	<bean id="productCommentReplayMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductCommentReplayMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	
+	<bean id="productActivitiesMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductActivitiesMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	
+	<bean id="productDetailsMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductDetailsMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	
+	<bean id="productStockSizeMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="org.itboys.product.dao.product.ProductStockSizeMapper" />
+		<property name="sqlSessionFactory" ref="productSessionFactory" />
+	</bean>
+	
+</beans>	

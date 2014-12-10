@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.itboys.product.dao.order.OrderItemMapper">
+     <!--  订单基本信息resultMap  -->
+	 <resultMap id="OrderItemMap" type="org.itboys.product.entity.mysql.OrderItem">
+		<result property="id" column="id" />
+		<result property="orderId" column="order_id" />
+		<result property="itemNo" column="item_no" />
+		<result property="productId" column="product_id" />
+		<result property="productName" column="product_name" />
+		<result property="productImg" column="product_img" />
+		<result property="num" column="num" />
+		<result property="totalFee" column="total_fee" />
+		<result property="fee" column="fee" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="memberId" column="member_id" />
+		<result property="elements" column="elements" />
+		<result property="status" column="status" />
+		<result property="commentStatus" column="comment_status" />
+		<result property="orderedFee" column="ordered_fee" />
+		<result property="periodFee" column="period_fee" />
+		<result property="periodCount" column="period_count" />
+		<result property="badStatus" column="bad_status" />
+		<result property="objId" column="obj_id" />
+		<result property="obj2Id" column="obj2_id" />
+		
+	 </resultMap>
+	
+	<update id="update" parameterType="org.itboys.product.entity.mysql.OrderItem">
+		update order_item set update_time=now()
+		<if test="fee!=null">
+			<![CDATA[ , fee=#{fee}]]>
+		</if>
+		<if test="status!=null">
+			<![CDATA[ , status=#{status}]]>
+		</if>
+		<if test="num!=null">
+			<![CDATA[ , num=#{num}]]>
+		</if>
+		<if test="totalFee!=null">
+			<![CDATA[ , total_fee=#{totalFee}]]>
+		</if>
+		where id=#{id} 
+	</update>
+	
+
+	<sql id="CARITEM_FIELDS">
+		id,orderId,itemNo,productId,productName,productImg,num,totalFee,fee,memberId,elements,status,commentStatus,
+		orderdFee,periodFee,periodCount,badStatus,objId,obj2Id
+	</sql>
+	
+	
+	<sql id="SELECT_ORDER_ITEM_CONDITION"><!-- -1为删除状态 -->
+		 FROM `order_item` where status!=-1
+		 <if test="id!=null ">
+			<![CDATA[ AND id=#{id} ]]>
+		</if>
+		<if test="orderId !=null ">
+			<![CDATA[ AND order_id=#{orderId} ]]>
+		</if>
+		<if test="orderIds!=null">
+			and order_id in
+			<foreach item="item" index="index" collection="orderIds" open="(" separator="," close=")">
+	              #{item}
+		  	</foreach>
+		</if>
+		<if test="itemNo !=null ">
+			<![CDATA[ AND item_no=#{itemNo} ]]>
+		</if>
+		<if test="productId !=null ">
+			<![CDATA[ AND product_id=#{productId} ]]>
+		</if>
+		<if test="productName !=null ">
+			<![CDATA[ AND product_name like CONCAT('%',#{productName},'%')]]>
+		</if>
+		<if test="productImg !=null ">
+			<![CDATA[ AND product_img=#{productImg} ]]>
+		</if>
+		<if test="num !=null ">
+			<![CDATA[ AND num=#{num} ]]>
+		</if>
+		<if test="totalFee !=null ">
+			<![CDATA[ AND total_fee=#{totalFee} ]]>
+		</if>
+		<if test="fee !=null ">
+			<![CDATA[ AND fee=#{fee} ]]>
+		</if>
+		<if test="createTime !=null ">
+			<![CDATA[ AND create_time=#{createTime} ]]>
+		</if>
+		<if test="updateTime !=null ">
+			<![CDATA[ AND update_time=#{updateTime} ]]>
+		</if>
+		<if test="memberId !=null ">
+			<![CDATA[ AND member_id=#{memberId} ]]>
+		</if>
+		<if test="elements !=null ">
+			<![CDATA[ AND elements=#{elements} ]]>
+		</if>
+		<if test="status !=null ">
+			<![CDATA[ AND status=#{status} ]]>
+		</if>
+		<if test="commentStatus !=null ">
+			<![CDATA[ AND comment_status=#{commentStatus} ]]>
+		</if>
+		<if test="orderdFee !=null ">
+			<![CDATA[ AND ordered_fee=#{orderedFee} ]]>
+		</if>
+		<if test="periodFee !=null ">
+			<![CDATA[ AND period_fee=#{periodFee} ]]>
+		</if>
+		<if test="periodCount !=null ">
+			<![CDATA[ AND period_count=#{periodCount} ]]>
+		</if>
+		<if test="badStatus !=null ">
+			<![CDATA[ AND bad_status=#{badStatus} ]]>
+		</if>
+		<if test="objId !=null ">
+			<![CDATA[ AND obj_id=#{objId} ]]>
+		</if>
+		<if test="obj2Id !=null ">
+			<![CDATA[ AND obj2_id=#{obj2Id} ]]>
+		</if>
+	</sql> 
+
+	<insert id="batchInsert">
+       INSERT INTO `order_item`(id,order_id,item_no,product_id,product_name,product_img,num,total_fee,fee,create_time,update_time,member_id,elements,status,comment_status,ordered_fee,period_fee,period_count,bad_status,obj_id,obj2_id)VALUES
+        <foreach collection="list" item="item" index="index"  separator=",">
+    		(#{item.id},#{item.orderId},#{item.itemNo},#{item.productId},#{item.productName},#{item.productImg},#{item.num},#{item.totalFee},
+    		#{item.fee},now(),now(),#{item.memberId},#{item.elements},#{item.status},#{item.commentStatus},
+    		#{item.orderedFee},#{item.periodFee},#{item.periodCount},#{item.badStatus},#{item.objId},#{item.obj2Id})
+    	</foreach>
+    </insert>
+       
+	<select id="getItems" resultMap="OrderItemMap"  >
+   	   SELECT id,order_id,item_no,product_id,product_name,product_img,num,total_fee,
+       fee,create_time,update_time,member_id,elements,status,comment_status,
+       ordered_fee,period_fee,period_count,bad_status,obj_id,obj2_id
+		FROM `order_item`  WHERE status!=-1 and `order_id` = #{orderId}
+		ORDER BY create_time desc
+	</select>  
+	
+	<select id="getById" resultMap="OrderItemMap" parameterType="long">
+		select *  from `order_item` where status!=-1 and id=#{id}
+	</select>
+	
+	<select id="getItemsByOrderIds" resultMap="OrderItemMap">
+		select id,order_id,item_no,product_id,product_name,product_img,num,total_fee,fee,create_time,update_time,member_id,elements,status from order_item  where  status!=-1 and order_id in
+		<foreach item="item" index="index" collection="list" 
+                    open="(" separator="," close=")">
+                   #{item}
+	  	</foreach>
+	</select>
+	
+	<select id="getItemsByMemberId" resultMap="OrderItemMap">
+		select *  <include refid="SELECT_ORDER_ITEM_CONDITION"/>
+	</select>
+    
+    <select id="getItemsByMemberIdCount" resultType="long" >
+    	select count(*)
+		<include refid="SELECT_ORDER_ITEM_CONDITION"/>
+    </select>
+  
+	 <update id="updateCommentStatus">
+	    UPDATE order_item  set comment_status=1	     	
+		 WHERE id in
+			  <foreach item="item" index="index" collection="list" 
+		    open="(" separator="," close=")">
+		   #{item}
+		</foreach> 
+	  </update>
+
+	  <select id="findByBrandIdss" resultMap="OrderItemMap">
+		select id,order_id,item_no,product_id,product_name,product_img,num,total_fee,fee,create_time,update_time,member_id,elements,status from order_item where status!=-1 and product_id in(select id from product where brand_id in <foreach item="item" index="index" collection="list" open="(" separator="," close=")">#{item}</foreach>)
+	  </select>
+	  
+	  <update id="deleteByOrder" parameterType="long">
+	  	update order_item set status=-1 where order_id=#{orderId}
+	  </update>
+	  
+	  <!-- 某个时间段内购买的商品订单，根据购买数量倒序 -->
+	  <select id="getOrderByProCount" resultMap="OrderItemMap">
+	  	select id,order_id,item_no,product_id,product_name,product_img,sum(num) as num,total_fee,fee,create_time,update_time,
+	  	member_id,elements,status,comment_status,ordered_fee,period_fee,
+	  	period_count,bad_status,obj_id,obj2_id from order_item where status!=-1
+	  	<if test="createTime!=null">
+	  		<![CDATA[ and create_time>=#{createTime} ]]>
+	  	</if>
+		  group by product_id order by num desc
+		 <if test="rowStart!=null and pageSize!=null">
+			<![CDATA[limit #{rowStart},#{pageSize}]]>
+		</if>
+	  </select>
+</mapper>
