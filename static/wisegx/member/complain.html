@@ -1,0 +1,101 @@
+<div style="margin:10px 0;"></div>
+
+<div id="complainSearchForm" style="padding:5px;height:auto">
+	<!-- <div style="margin-bottom:5px">
+		<a href="#"  onclick="addComplain()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增用户</a>
+	</div>
+	 
+	<div>
+		<form id="queryComplainForm">
+			姓名:<input class="easyui-validatebox" name="filter_S_name" style="width:100px">
+			<a href="javascript:doSearchObject('complainTable','queryComplainForm')" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
+		</form>
+	</div>
+	-->
+</div>
+	
+<div id="add_complain" class="easyui-window" title="详细内容" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:630px;padding:10px;">
+	<div style="padding:10px 0 10px 60px">
+	   <form id="adminComplainForm" method="post" action="/wise/complain/save" enctype="multipart/form-data">
+	   <input  name="id" type="hidden"/>
+	    <table>
+			<tr>
+				<td>投诉内容:</td>
+				<td><textarea name="content"></textarea></td>
+			</tr>
+			<!-- 
+			<tr>
+	            <td>&nbsp;</td>
+	            <td>
+	            	<input type="submit" value="提交" ></input>
+	            	<input type="reset" value="重置" ></input>
+	            </td>
+	        </tr>
+	         -->
+		</table>
+	  </form>
+	</div>
+</div>
+
+<table id="complainTable" style="width:1050px"></table>
+
+<script>
+	$('#complainTable').datagrid({   
+		url:'/wise/membercomment/list?filter_S_type=0',   
+		toolbar: '#complainSearchForm',
+		pagination:true,
+		singleSelect:true,
+		rownumbers:true,
+		autoRowHeight:true,
+		columns:[[   
+					{field:'field1',title:'投诉人',width:90},
+					{field:'createTime',title:'时间',width:190},
+					{field:'operate',title:'操作',width:250,
+						formatter: function(value,row,index){
+							var retValue = outPutFunction("editComplain",row.id,"查看")  + outPutFunction("freezeComplain",row.id,"删除");
+
+							return retValue;
+						}
+					}
+				]]
+		});
+	
+	function addComplain(){
+		$("#adminComplainForm").form('clear');
+		$("#add_complain").window('open');
+	}
+	
+	
+	
+	function editComplain(uid){
+		$.get("/wise/membercomment/getById/"+uid,function(data){
+			$('#add_complain').window('open');
+			$('#adminComplainForm').form('load',data);
+		});
+	}
+	
+	function freezeComplain(uid){
+		$.messager.confirm('投诉信息管理',"确定要删除吗?",function(r){
+			if(r){
+				jQuery.post("/wise/membercomment/delete/"+uid,{},function(data){
+		    		if(data=='success'){
+						$("#complainTable").datagrid('reload'); 
+					}else{
+						$.messager.alert('Info', "删除失败", 'info');			
+					}
+		    	});
+			}
+		});  	
+	}
+	$('#adminComplainForm').form({
+		   success:function(data){
+		      $('#add_complain').window('close');
+		     if(data == 'success'){
+			    $("#complainTable").datagrid('reload'); 
+			    $(".easyui-validatebox").val('');
+			  }else{
+			 	$.messager.alert('Info', "添加失败", 'info');
+			   }   
+		   }
+	});
+</script>

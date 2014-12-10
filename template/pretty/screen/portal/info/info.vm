@@ -1,0 +1,218 @@
+#if($!item.type==1)
+	<iframe src="/portal/info/input?id=$!{info.id}&itemId=$!{item.id}" marginwidth="0" marginheight="0" width="850" onload="Javascript:SetWinHeight(this)" frameborder="0" scrolling="yes" allowtransparency="true"></iframe>
+#elseif($!item.type==2)
+<div style="margin: 10px 0;"></div>
+<div id="infoSearchForm$!parentId" style="padding: 5px; height: auto">
+	<div style="margin-bottom: 5px">
+		<a href="#" onclick="infoPub()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增信息</a>
+	</div>
+</div>
+
+<div id="info_input$!parentId" class="easyui-window" title="$!item.name 下信息发布"  data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:1000px; height:620px; padding: 10px;">
+	<iframe src="#" id="info_input_ifr$!parentId" marginwidth="0" marginheight="0" width="850px" height="1250px" frameborder="0" scrolling="no" allowtransparency="true"></iframe>	
+</div>
+
+<table id="infoTable$!parentId" style="width:935px"></table>
+
+<script>
+
+	function infoPub(infoid){
+		var infouri = "/portal/info/input?itemId=$!item.id";
+		if(typeof infoid!='undefined' && infoid){
+			infouri=infouri+"&id="+infoid;
+		}
+		if("$!parentId"!=''){
+			infouri=infouri+"&parentId=$!parentId";
+		}
+		$("#info_input_ifr$!parentId").attr("src",infouri);
+		$("#info_input_ifr$!parentId").attr("width","850px");
+		$('#info_input$!parentId').panel({"title":"$!{item.name}下信息发布"});
+		$('#info_input$!parentId').window('open');
+	}
+	
+	$('#infoTable$!parentId').datagrid({
+		url : '/portal/info/list?itemId=$!item.id',
+		toolbar : '#infoSearchForm$!parentId',
+		pagination : true,
+		singleSelect : true,
+		rownumbers : true,
+		columns : [[
+			{field : 'title',title : '标题',width:380},
+			{field : 'updateTime',title : '最后更新时间',width:125},
+			{field : 'publicTime',title : '发布时间',width:125},
+			{field : 'operate',title : '操作',width:260,
+				formatter : function(value, row, index) {
+                        var ophtml = '<a href="javascript:infoPub('+row.id+')">[编辑]</a>'+outPutFunction("freezeInfo",row.id,"删除");
+						if(typeof row.isRecommend!='undefined' && row.isRecommend!=null && row.isRecommend==2){
+							ophtml=ophtml+'<a id="infoRecommendHref'+row.id+ '" href="javascript:doUpdateRecommend('+row.id+',0)">[取消推荐]</a>';
+						}else{
+							ophtml=ophtml+'<a id="infoRecommendHref'+row.id+ '" href="javascript:doUpdateRecommend('+row.id+',1)">[置为推荐]</a>';
+						}
+						##ophtml=ophtml+'<a href="javascript:courseMemberList('+row.id+')">[报名会员列表]</a>';
+						return ophtml;
+				}
+			} 
+		]]
+	});
+	
+	function doUpdateRecommend(ifoid,_val){
+		jQuery.post("/portal/info/updateRecommend",{id:ifoid,value:_val},function(data){
+			if(data=='fail' || data<=0){
+				jQuery.messager.alert('Info', "操作失败", 'info');
+			}else{
+				jQuery.messager.alert('Info', "操作成功", 'info');
+				
+				if(_val==2){
+					$('#infoRecommendHref'+ifoid).attr('href','javascript:doUpdateRecommend('+ifoid+',1)').text('[取消推荐]');
+				}else{
+					$('#infoRecommendHref'+ifoid).attr('href','javascript:doUpdateRecommend('+ifoid+',2)').text('[置为推荐]');
+				}
+				$("#infoTable$!parentId").datagrid('reload');
+			}
+		});
+	}
+	
+	
+			
+	function seeComment(infoid){		
+		var title="信息评价"+infoid;
+		jQuery.get("/membercomment/golist/"+infoid,function(data){
+			if (!$('#main-tabs-div').tabs('exists',title)) {
+				$('#main-tabs-div').tabs('add',{
+					title: title,
+					content: data,
+					closable: true
+				});
+			}else{
+				$('#main-tabs-div').tabs('select',title);
+			}
+			
+		});
+	}
+		
+	
+	
+		function freezeInfo(infoid){
+    		jQuery.messager.confirm('信息管理',"确定要删除吗?",function(r){
+    			if(r){
+					jQuery.post("/portal/info/delete/"+infoid,function(data){
+    	    			if(data=='fail'){
+							jQuery.messager.alert('Info', "删除失败", 'info');
+    					}else{
+    						$("#infoTable$!parentId").datagrid('reload'); 		
+    					}
+    	    		});
+				}
+    		});  	
+    	}
+		
+	
+</script>
+
+
+#elseif($!item.type==3)
+<div style="margin: 10px 0;"></div>
+<div id="info_url_SearchForm" style="padding: 5px; height: auto">
+	<div style="margin-bottom: 5px">
+		<a href="#" onclick="pubInfo()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增链接</a>
+	</div>
+</div>
+
+<div id="add_pro_url" class="easyui-window" title="链接管理" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:400px;padding:10px;">
+    	<div style="padding:10px 0 10px 60px">
+    	   <form id="pro_url_Form" method="post" action="/portal/info/saveurl">
+    	   <input  name="id" type="hidden"/>
+		   <input name="itemId" type="hidden" value=""/>
+    	    <table>
+				<tr>
+    				<td style="width:100px">标题:</td>
+    				<td><input  name="title" autoComplete="off" class="easyui-validatebox" type="text"  data-options="required:true"></input></td>
+    			</tr>
+    			<tr>
+    				<td style="width:100px">url:</td>
+    				<td><input  name="url" autoComplete="off" class="easyui-validatebox" type="text"  data-options="required:true"></input></td>
+    			</tr>
+    			<tr>
+    				<td>描述:</td>
+    				<td><textarea name="content" data-options="required:true" style="width:250px;height:80px;"></textarea></input></td>
+    			</tr>
+    			<tr>
+    	            <td>&nbsp;</td>
+    	            <td>
+    	            	<input type="submit" value="提交"></input>
+    	            	<input type="reset" value="重置" ></input>
+    	            </td>
+    	        </tr>
+    		</table>
+    	  </form>
+    	</div>
+    </div>
+
+<table id="info_url_Table" style="width:920px"></table>
+	
+	<script>
+    	$('#info_url_Table').datagrid({   
+    		url:'/portal/info/list?itemId=$!item.id',   
+    		toolbar: '#info_url_SearchForm',
+    		pagination:true,
+    		singleSelect:true,
+    		rownumbers:true,
+    		columns:[[   
+						{field:'title',title:'标题',width:180},
+    					{field:'url',title:'url',width:200},
+    					{field:'content',title:'描述',width:250},
+    					{field:'operate',title:'操作',width:210,
+    						formatter: function(value,row,index){
+    								return outPutFunction("editInfo",row.id,"编辑")+outPutFunction("freezeInfo",row.id,"删除");
+    						}
+    					}
+    				]],
+    		});
+    		
+    		
+		function pubInfo(){
+		 	$("#pro_url_Form").form('clear');
+			$("#pro_url_Form input[name='itemId']").val($!{item.id});
+		   	$('#add_pro_url').window('open');
+		}
+			
+    	function editInfo(id){
+    		jQuery.get("/portal/info/findInfo/"+id,function(data){
+    			$('#add_pro_url').window('open');
+    			$('#pro_url_Form').form('load',data);
+    		});
+    	}
+    		
+
+		
+		
+    	function freezeInfo(infoid){
+    		jQuery.messager.confirm('信息管理',"确定要删除吗?",function(r){
+    			if(r){
+					jQuery.post("/portal/info/delete/"+infoid,function(data){
+    	    			if(data=='fail'){
+							jQuery.messager.alert('Info', "删除失败", 'info');
+    					}else{
+    						$("#info_url_Table").datagrid('reload'); 		
+    					}
+    	    		});
+				}
+    		});  	
+    	}
+    		
+    	$('#pro_url_Form').form({
+    		   success:function(data){
+    		     if(data =="fail"){
+    			 	 jQuery.messager.alert('Info', "添加失败", 'info');
+    			  }else{
+				 		$('#add_pro_url').window('close');
+    				    $("#info_url_Table").datagrid('reload'); 
+        			    $(".easyui-validatebox").val('');
+    			   }   
+    		   }
+    	});
+		
+	
+ 
+    </script>
+#end

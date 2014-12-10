@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>${item.name}下信息发布平台</title>
+	<link rel="stylesheet" type="text/css" href="$!{staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="$!{staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="$!{staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="$!{staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="$!{staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="$!{staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="$!{staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="$!{staticRoot}/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="$!{staticRoot}/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="$!{staticRoot}/kindeditor-4.1.7/lang/zh_CN.js"></script>
+</head>
+</body>	
+<div style="padding: 10px 0 10px 60px" style="width:750px; height:400px; padding: 10px;">
+		<form id="infoForm" method="post" enctype="multipart/form-data">
+			<input name="id" type="hidden" #if("$!{info.id}"=="")value="0" #else value="$!{info.id}" #end/>
+			<input name="itemId" type="hidden" value="$!{item.id}"/>
+			<input name="content" id="infoContent" type="hidden" />
+			<table>
+				<tr>
+					<td>标题</td>
+					<td><input type="text" name="title" autoComplete="off" value="$!{info.title}" class="easyui-validatebox" style="width:400px" type="text" data-options="required:true" /></td>
+				</tr>
+				<tr>
+					<td>副标题</td>
+					<td><input type="text" name="subtitle" autoComplete="off" value="$!{info.subtitle}" class="easyui-validatebox" style="width:400px" type="text" /></td>
+				</tr>
+				<tr>
+					<td>引题</td>
+					<td><input type="text" name="field1" autoComplete="off" value="$!{info.field1}" class="easyui-validatebox" style="width:400px" type="text" /></td>
+				</tr>
+				<tr>
+					<td>作者</td>
+					<td><input type="text" name="author" autoComplete="off" value="$!{info.author}" class="easyui-validatebox" style="width:400px" type="text" /></td>
+				</tr>
+				<tr>
+					<td>信息摘要</td>
+					<td><textarea name="summary" class="easyui-validatebox"  style="width:400px;height:80px;">$!{info.summary}</textarea></td>
+				</tr>
+				<tr>
+					<td>信息来源</td>
+					<td><input type="text" name="source" autoComplete="off" value="$!{info.source}" class="easyui-validatebox" style="width:400px" type="text" /></td>
+				</tr>
+				<tr>
+					<td>来源地址</td>
+					<td><input type="text" name="url" autoComplete="off" value="$!{info.url}" class="easyui-validatebox" style="width:400px" type="text" /></td>
+				</tr>
+				<tr>
+					<td>推送时间</td>
+					<td><input type="text" class="easyui-datebox" name="lastSendTime" style="width:145px"  value="$!timeUtils.format($!info.lastSendTime,'yyyy-MM-dd HH:mm:ss')"/></td>
+				</tr>
+				<tr>
+					<td>发布时间</td>
+					<td><input type="text" class="easyui-datetimebox" name="publicTime" style="width:145px"  value="$!timeUtils.format($!info.publicTime,'yyyy-MM-dd HH:mm:ss')"/></td>
+				</tr>
+				<tr>
+					<td>是否头条</td>
+					<td>
+						<input type="radio" name="isHead" value="1" #if("$!{info.isHead}"!="2") checked ="true" #end>否
+						<input type="radio" name="isHead" value="2" #if("$!{info.isHead}"=="2") checked ="true" #end>是
+					</td>
+				</tr>
+				<tr>
+					<td>是否推荐</td>
+					<td>
+						<input type="radio" name="isRecommend" value="0" #if("$!{info.isRecommend}"!="2") checked ="true" #end>否
+						<input type="radio" name="isRecommend" value="1" #if("$!{info.isRecommend}"=="2") checked ="true" #end>是
+					</td>
+				</tr>
+
+				<tr id="mlgx"  style="display:none;">
+					<td>信息设置</td>
+    				<td>
+    					<input class="easyui-combobox" id="mlIndex" name="objId" data-options="valueField:'key',textField:'value'" />
+    				</td>		
+				</tr>
+                <script>
+					 var hdType = "$!{info.isHead}";
+					 if(hdType=="2"){
+					 	jQuery.get("/portal/info/getConfig/",function(data){
+                    			if(data!=null && data != ""){
+                            		$("#mlgx").show();
+                            		$('#mlIndex').combobox({
+        								data:data,
+        								valueField:'key',
+        								textField:'value'
+        							});
+                        		}
+    					});
+						var inf = $!{info.id}
+    					jQuery.get("/portal/info/getSelected",{infoId:inf},function(data){
+    						setTimeout(function(){
+    							//默认值选中
+    							$('#mlIndex').combobox('select', data);
+    						},50)
+    					});
+					 }
+				</script>
+				
+				#if($!infoTags.size()>0)
+				<tr>
+					<td>标签</td>
+					<td>
+						<select name="tagId">
+							#foreach($infoTags in $!infoTags)
+								<option value="$!{infoTags.id}" #if("$!{infoTags.id}"=="$!{info.tagId}") selected  #end>$!{infoTags.name}</option>
+							#end
+                        </select>
+					</td>
+				</tr>
+				#end
+				<tr>
+					<td>是否推送</td>
+					<td>
+						<input type="radio" name="isSend" value="1" #if("$!{info.isSend}"!="2") checked ="true" #end>否
+						<input type="radio" name="isSend" value="2" #if("$!{info.isSend}"=="2")  checked ="true" #end>是
+					</td>
+				</tr>
+				<tr>
+					<td>信息内容</td>
+					<td><textarea id="infoBody">$!{info.content}</textarea></td>
+				</tr>
+				<tr>
+					<td>信息主图</td>
+					<td>
+						<input name="imgFile"  type="file"  style="width:150px">
+						#if("$!{info.image}"!="")
+							<a href="$!{imgRoot}$!{info.image}" target="_blank"><img src="$!{imgRoot}$!{info.image}" style="height:40px"/></a>
+						#end
+						$!codesHolder.getConfigValue("INFO_MAIN_SIZE")
+					</td>
+				</tr>
+				<tr>
+					<td>列表图片</td>
+					<td>
+						<input name="listImgFile"  type="file"  style="width:150px">
+						#if("$!{info.listImage}"!="")
+							<a href="$!{imgRoot}$!{info.listImage}" target="_blank"><img src="$!{imgRoot}$!{info.listImage}" style="height:40px"/></a>
+						#end
+						$!codesHolder.getConfigValue("INFO_LIST_SIZE")
+					</td>
+				</tr>
+				<tr>
+					<td>列表推荐图</td>
+					<td>
+						<input name="tjImageFile"  type="file"  style="width:150px">
+						#if("$!{info.tjImage}"!="")
+							<a href="$!{imgRoot}$!{info.tjImage}" target="_blank"><img src="$!{imgRoot}$!{info.tjImage}" style="height:40px"/></a>
+						#end
+						$!codesHolder.getConfigValue("INFO_TJ_SIZE")
+					</td>
+				</tr>
+				<tr>
+					<td>&nbsp</td>
+					<td><hr/></td>
+				</tr>
+				#if($!info.images.size() > 0)
+				<tr>
+					<td>已上传图片</td>
+					<td> 
+						#foreach($pat in $!info.images)
+								<span id="existInfoImgSpan$pat.id">图片名称:<a href="$!{imgRoot}$!{pat.path}" target="_blank">$!pat.relName</a>&nbsp;&nbsp;<a href="" >[复制图片地址]</a>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="doDelInfoAttachement('existInfoImgSpan',$pat.id,'$pat.sign')">[删除]</a></span><br/>
+						#end
+					</td>
+				</tr>
+				#end
+				<tr>
+					<td>相关图片</td>
+					<td id="infoImgTd">
+							<span><input name="imgFiles"  type="file" style="width:150px">图片名称:<input name="imgName"  type="text" style="width:70px"> <a href="javascript:doAddInfoImage()">新增图片</a></span>
+				    </td>
+				</tr>
+				<tr>
+					<td>&nbsp</td>
+					<td><hr/></td>
+				</tr>
+				#if($!info.attachs.size()>0)
+				<tr>
+					<td>已上传附件</td>
+					<td> 
+						#foreach($pat in $!info.attachs)
+							<span id="existInfoAttSpan$pat.id">附件名称:<a href="$!{imgRoot}$!{pat.path}" target="_blank">$!pat.relName</a>&nbsp;&nbsp;<a href="" >[复制附件地址]</a>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="doDelInfoAttachement('existInfoAttSpan',$pat.id,'$pat.sign')">[删除]</a></span><br/>
+						#end
+					</td>
+				</tr>
+				#end
+				<tr>
+					<td>相关附件</td>
+					<td id="infoAttachTd">
+							<span><input name="attachements"  type="file" style="width:150px">附件名称:<input name="attachName"  type="text" style="width:70px"> <a href="javascript:doAddInfoAttach()">新增附件</a></span>
+				    </td>
+				</tr>
+				<tr>
+					<td></td>
+	            	<td>
+						<center>
+						#if("$!info.id"=='')
+							<a href="javascript:void(0)" class="easyui-linkbutton" onclick="doSubmit()" id="cjinfo">创建</a>
+							<a href="javascript:void(0)" class="easyui-linkbutton" onclick="doSubmit()" id="bjinfos" style="display:none;">编辑</a>
+							<a href="javascript:void(0)" class="easyui-linkbutton" onclick="doPubInfo()">创建并发布</a>
+						#else
+							<a href="javascript:void(0)" class="easyui-linkbutton" onclick="doSubmit()">保存</a>
+							<a href="javascript:void(0)" class="easyui-linkbutton" onclick="fabuInfo()">发布</a>
+						#end
+						</center>
+	           		</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<script>
+	
+	function doAddInfoImage(){
+		var tmpfid = getJsRandomStr(5)+new Date().getTime();
+		var imghtml = '<span id="'+tmpfid+'"><br/><input name="imgFiles"  type="file" style="width:150px">图片名称:<input name="imgName"  type="text" style="width:70px">&nbsp;&nbsp;<a href="javascript:removeJqueryNode(\''+tmpfid+'\')">[删除图片]</a></span>';
+		$("#infoImgTd").append(imghtml);
+	}
+	
+	function doAddInfoAttach(){
+			var tmpfid = getJsRandomStr(5)+new Date().getTime();
+    		var imghtml = '<span id="'+tmpfid+'"><br/><input name="attachements"  type="file" style="width:150px">图片名称:<input name="attachName"  type="text" style="width:70px">&nbsp;&nbsp;<a href="javascript:removeJqueryNode(\''+tmpfid+'\')">[删除附件]</a></span>';
+    		$("#infoAttachTd").append(imghtml);
+	}
+	
+	function doDelInfoAttachement(spanpfx,atid,atsign){
+		jQuery.messager.confirm('信息附件管理',"确定要删除吗?",function(r){
+			if(r){
+				jQuery.post("/deleteAttachement",{id:atid,sign:atsign},function(data){
+						if(data=='success'){
+							$("#"+spanpfx+atid).remove();
+						}else{
+							jQuery.messager.alert('Info', "删除失败", 'info');
+						}
+				});
+			}
+		});
+	}
+	
+	var editor1 = KindEditor.create('textarea[id="infoBody"]', {
+		uploadJson:'$!{adminRoot}/doUploadWithWaterMark?waterMark=defaultWaterMark',
+		allowFileManager : true,
+		width:"400px",
+	    height:"360px"
+	});
+	
+	function fabuInfo(){
+		$("#infoContent").val(editor1.html());
+		initAttachNameEmptys();
+		$('#infoForm').form('submit',{
+			url:"/portal/info/fabuInfo",
+			success : function(data) {
+				if(data == 'fail') {
+					jQuery.messager.alert('Info', "失败", 'info');
+				}else {
+					jQuery.messager.alert('Info', "发布成功", 'info');
+					parent.$("#infoTable$!parentId").datagrid('reload');
+					parent.$('#info_input$!parentId').window('close');
+				}
+			}
+		});
+	}
+	
+	
+	function doSubmit(){
+		$("#infoContent").val(editor1.html());
+		initAttachNameEmptys();
+		$('#infoForm').form('submit',{
+			url:"/portal/info/save",
+			success : function(data) {
+				if (data == 'fail') {
+					jQuery.messager.alert('Info', "失败", 'info');
+				} else {
+					$("#infoForm input[name='id']").val(data);
+					jQuery.messager.alert('Info', "成功", 'info');
+					#if("$!item.type"=="2")
+    					parent.$('#info_input$!parentId').window('close');
+    					parent.$("#infoTable$!parentId").datagrid('reload');
+					#else("$!item.type"=="1")
+						parent.$('#infoDiv').panel('refresh', '/portal/info/info/'+$!item.id);
+    					$("#cjinfo").hide();
+    					$("#bjinfos").show();
+					#end
+				}
+			}
+		});
+	}
+	
+	function doPubInfo(){
+		$("#infoContent").val(editor1.html());
+		initAttachNameEmptys();
+		$('#infoForm').form('submit',{
+			url:"/portal/info/doPubInfo",
+			success : function(data) {
+				if (data =="fail") {
+					jQuery.messager.alert('Info', "失败", 'info');
+				} else {
+					jQuery.messager.alert('Info', "发布成功", 'info');
+					parent.$('#info_input$!parentId').window('close');
+					parent.$("#infoTable$!parentId").datagrid('reload');
+				}
+			}
+		});
+	}
+
+	function initAttachNameEmptys(){
+		var domAttaNames = document.getElementsByName("imgName"); 
+		for(var i=0;i<domAttaNames.length;i++){
+			if(domAttaNames[i].value==null || domAttaNames[i].value==''){
+				domAttaNames[i].value=" ";
+			}
+		}
+		domAttaNames = document.getElementsByName("attachName"); 
+		for(var i=0;i<domAttaNames.length;i++){
+			if(domAttaNames[i].value==null || domAttaNames[i].value==''){
+				domAttaNames[i].value=" ";
+			}
+		}
+	}
+	
+	$("input[name='isHead']").change(function(){
+			var checkedType = $(this).val();
+			if(checkedType=="2"){
+    			jQuery.get("/portal/info/getConfig/",function(data){
+				if(data!="" && data != null){
+                    		$("#mlgx").show();
+                    		$('#mlIndex').combobox({
+								data:data,
+								valueField:'key',
+								textField:'value'
+							});
+                		}
+    			});
+			}
+	});
+	</script>
+</body>
+</html>

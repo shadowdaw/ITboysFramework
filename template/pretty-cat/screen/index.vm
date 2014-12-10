@@ -1,0 +1,9 @@
+<br/>
+哈哈 我是韦世奎 我现在好强好强
+<br/>
+图片服务器:  $staticResource.get("imgRoot");
+<br/>
+静态资源服务器 	$staticResource.get("staticRoot");
+<br/>
+主站资源服务器 	$staticResource.get("webRoot");
+<br/>

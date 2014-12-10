@@ -1,0 +1,29 @@
+<div class="easyui-layout" style="width:1150px;height:650px;">
+	<div data-options="region:'west',split:true" title="栏目管理" style="width:200px;height:650px;">
+		<ul id="infoTree" class="easyui-tree" 
+			data-options="animate:true,
+			checkbox:false,
+			onClick: function(node){
+					jQuery.get('/portal/item/getItem/'+node.id,{},function(data){
+					if(data.isLeaf==1){
+						$('#proInfo').panel('refresh', '/portal/info/info/'+node.id);
+					}
+				});
+			}
+			">
+		</ul>
+
+	</div>
+	<div id="proInfo" class="easyui-panel" data-options="region:'center'" title="信息管理" style="width:950px;height:650px;padding:10px;">
+		
+	</div>
+	<script>
+	
+		$('#infoTree').tree({
+			url:'/portal/item/getTreeItem',
+			onlyLeafCheck:true
+		}); 
+	
+	</script>
+</div>
+

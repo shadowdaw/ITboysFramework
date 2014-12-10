@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" " http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns=" http://www.w3.org/1999/xhtml">
+<head>
+<title>信息详情</title>
+<style type="text/css">
+body,ul,li,form,img,.nopad,h2,pdl,dt,dd{margin:0;padding:0;border:0;}
+body,td,option,input,textarea,select,option{font-family:arial,Helvetica,sans-serif;}
+input,textarea,select,option{font-size:100%;}
+ul,li{list-style:none;}
+div,p{margin:0;line-height:120%;word-wrap:break-word;word-break:break-all;}
+table{border-collapse:collapse;}
+td{vertical-align:top;padding:0;}
+a{color:#005EAC;text-decoration:none}
+a:hover,.gs a:hover{color:#fff;background:#005EAC;text-decoration:none;}
+img{margin-right:2px;}
+em{color:#C9C9C9;font-style:normal;}
+.clear{clear:both;height:0;line-height:0;font-size:0;overflow:hidden;visibility:hidden;}
+dl,h3{margin:0;padding:0;}
+/*gs:链接也是灰色,ns:链接蓝色*/
+#warpper{width:auto;margin:0;padding:0;}
+.descision_title{padding:13px 0 10px 0;border-bottom:1px solid #CCC;overflow:hidden;zoom:1;}
+.descision_title h2{font-size:16px;color:#333;font-weight:normal;padding:0 13px 10px 13px; font-family:"黑体";}
+.descision_title p{font-size:12px;color:#878787;padding-left:13px;padding-right:10px;}
+.descision_title p span{padding-right:10px;}
+.descision_con{width:auto;padding:13px 13px 10px 13px;}
+.descision_con p{width:auto;font-size:16px;line-height:22px;color:#101010;}
+
+.publish{background-color:#CCC;padding:10px 0;}
+.discuss_list{margin-top:5px;border:1px solid #999;border-left:0;border-right:0;overflow:hidden;zoom:1;margin:0 13px;}
+.discuss_list dl{clear:both;overflow:hidden;zoom:1;border-top:1px solid #999;padding:10px 0 10px 15px;}
+.discuss_list dl dt{float:left;padding:10px 10px 0 0;}
+.discuss_list dl dd{font-size:14px;line-height:22px;color:#101010;}
+.discuss_list dl dd p{overflow:hidden;zoom:1;margin-top:10px;}
+.discuss_list dl dd strong{float:left;}
+.discuss_list dl dd span{float:right;margin-right:10px;}
+
+</style>
+</head>
+<script type="text/javascript" src="http://vipstatic.sunday-mobi.com/js/jquery.js"></script>
+ <script type="text/javascript">
+  function myFunction (value){
+$(document).ready(function() {
+	$("p").css({fontSize:value});//dom
+    
+});
+}
+</script>
+<body>
+<!--<input type="submit" id="style" value="保存设置" onClick="myFunction('28px');" />-->
+<div id="warpper">
+ <div id="contact"> 
+  <div class="descision">
+   <div class="descision_title">
+	#if("$!info.image"!="")
+		 <p><img src="$!{info.image}" height="40%" width="100%"/></p>
+	#end	
+   
+    <p><br /></p>
+    <h2>$!{info.title} </h2>
+     <!--<p><span>2012-09-06</span><span>来源：&nbsp;本报记者 王凯</span></p>-->
+   </div>
+   <div class="descision_con" id="descision_con">
+     $!{info.content}
+   </div><!--descision_con end-->
+  </div><!--descision end-->
+ </div><!--contact end-->
+ 
+  </div><!--contact end--> 
+</div><!--warpper end--> 
+</body>
+</html>

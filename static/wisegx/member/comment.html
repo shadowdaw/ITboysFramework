@@ -1,0 +1,101 @@
+<div style="margin:10px 0;"></div>
+
+<div id="commentSearchForm" style="padding:5px;height:auto">
+	<!-- <div style="margin-bottom:5px">
+		<a href="#"  onclick="addComment()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增用户</a>
+	</div>
+	 
+	<div>
+		<form id="queryCommentForm">
+			姓名:<input class="easyui-validatebox" name="filter_S_name" style="width:100px">
+			<a href="javascript:doSearchObject('commentTable','queryCommentForm')" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
+		</form>
+	</div>
+	-->
+</div>
+	
+<div id="add_comment" class="easyui-window" title="详细内容" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:630px;padding:10px;">
+	<div style="padding:10px 0 10px 60px">
+	   <form id="adminCommentForm" method="post" action="/wise/comment/save" enctype="multipart/form-data">
+	   <input  name="id" type="hidden"/>
+	    <table>
+			<tr>
+				<td>咨询内容:</td>
+				<td><textarea name="content"></textarea></td>
+			</tr>
+			<!-- 
+			<tr>
+	            <td>&nbsp;</td>
+	            <td>
+	            	<input type="submit" value="提交" ></input>
+	            	<input type="reset" value="重置" ></input>
+	            </td>
+	        </tr>
+	         -->
+		</table>
+	  </form>
+	</div>
+</div>
+
+<table id="commentTable" style="width:1050px"></table>
+
+<script>
+	$('#commentTable').datagrid({   
+		url:'/wise/membercomment/list?filter_S_type=2',   
+		toolbar: '#commentSearchForm',
+		pagination:true,
+		singleSelect:true,
+		rownumbers:true,
+		autoRowHeight:true,
+		columns:[[   
+					{field:'field1',title:'提供人',width:90},
+					{field:'createTime',title:'时间',width:190},
+					{field:'operate',title:'操作',width:250,
+						formatter: function(value,row,index){
+							var retValue = outPutFunction("editComment",row.id,"查看")  + outPutFunction("freezeComment",row.id,"删除");
+
+							return retValue;
+						}
+					}
+				]]
+		});
+	
+	function addComment(){
+		$("#adminCommentForm").form('clear');
+		$("#add_comment").window('open');
+	}
+	
+	
+	
+	function editComment(uid){
+		$.get("/wise/membercomment/getById/"+uid,function(data){
+			$('#add_comment').window('open');
+			$('#adminCommentForm').form('load',data);
+		});
+	}
+	
+	function freezeComment(uid){
+		$.messager.confirm('咨询信息管理',"确定要删除吗?",function(r){
+			if(r){
+				jQuery.post("/wise/membercomment/delete/"+uid,{},function(data){
+		    		if(data=='success'){
+						$("#commentTable").datagrid('reload'); 
+					}else{
+						$.messager.alert('Info', "删除失败", 'info');			
+					}
+		    	});
+			}
+		});  	
+	}
+	$('#adminCommentForm').form({
+		   success:function(data){
+		      $('#add_comment').window('close');
+		     if(data == 'success'){
+			    $("#commentTable").datagrid('reload'); 
+			    $(".easyui-validatebox").val('');
+			  }else{
+			 	$.messager.alert('Info', "添加失败", 'info');
+			   }   
+		   }
+	});
+</script>

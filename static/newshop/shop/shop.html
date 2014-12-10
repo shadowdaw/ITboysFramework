@@ -1,0 +1,198 @@
+<div style="margin: 10px 0;"></div>
+<div id="shopSearchForm" style="padding: 5px; height: auto">
+	<div style="margin-bottom: 5px">
+		<a href="#" onclick="addShop()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增店铺</a>
+	</div>
+	<form id="queryShopForm">
+		<div>
+			店铺名称: <input class="easyui-validatebox" name="filter_S_name" style="width: 100px">
+			<a href="javascript:doSearchObject('shopTable','queryShopForm')" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
+		</div>
+	</form>
+</div>
+
+
+
+<div id="add_shop" class="easyui-window" title="店铺管理" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:1000px; height:630px; padding: 10px;">
+	<iframe src="#" id="shop_ifr" marginwidth="0" marginheight="0" width="960px" height="560px" frameborder="0" scrolling="false" allowtransparency="true"></iframe>	
+</div>
+<div id="add_shop_user" class="easyui-window" title="分配账号" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:630px;padding:10px;">
+	<div style="padding:10px 0 10px 60px">
+	   <form id="adminShopUserForm" method="post" action="/shop/user/save" enctype="multipart/form-data">
+	   <input  name="id" id="shopUserId" type="hidden" value="0"/>
+	   <input  name="shopId" id="shopId" type="hidden" value="0"/>
+	    <table>
+			<tr>
+				<td style="width:130px">用户名:</td>
+				<td><input  name="userName" autoComplete="off" class="easyui-validatebox" type="text"  data-options="required:true" ></input></td>
+			</tr>
+			<tr>
+				<td>姓名:</td>
+				<td><input name="name" autoComplete="off" class="easyui-validatebox" type="text"  data-options="required:true"></input></td>
+			</tr>
+			<tr>
+				<td>密码:</td>
+				<td><input name="password" autoComplete="off" class="easyui-validatebox" type="password"  data-options="required:true,validType:'charOrDigit'"></input></td>
+			</tr>
+			<tr>
+				<td>手机号码:</td>
+				<td><input name="mobile" autoComplete="off" class="easyui-validatebox" type="text"  data-options="required:true"></input></td>
+			</tr>
+			<tr>
+				<td>头像:</td>
+				<td>
+					<input name="logos" type="file"  data-options="required:true"></input>
+				</td>
+			</tr>
+			<tr id="adminUserLogotr" style="display: none;">
+				<td>&nbsp;</td>
+				<td id="adminUserLogoSpan">
+				</td>
+			</tr>
+			<tr>
+				<td>生日:</td>
+				<td><input class="easyui-datebox" name="birthday" style="width:100px"></input></td>
+			</tr>
+			<tr>
+				<td>性别:</td>
+				<td>
+					<input name="sex" type="radio" value="1">男
+					<input name="sex" type="radio" value="2">女
+				</td>
+			</tr>
+			<tr>
+	            <td>&nbsp;</td>
+	            <td>
+	            	<input type="button" value="提交" onclick="doSubmit()"></input>
+	            	<input type="reset" value="重置" ></input>
+	            </td>
+	        </tr>
+		</table>
+	  </form>
+	</div>
+</div>
+<div id="editManager" class="easyui-window" title="已分配账号" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:1000px; height:650px; padding: 10px;">
+    <iframe src="#" id="manager_ifr" marginwidth="0" marginheight="0" width="900px" height="560px" frameborder="0" scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<table id="shopTable" style="width:1100px" class="easyui-datagrid"></table>
+
+<script>
+	
+	$('#shopTable').datagrid({
+		url:'/shop/shop/list',
+		pagination:true,
+		singleSelect:true,
+		rownumbers:true,
+		autoRowHeight:true,
+		toolbar : '#shopSearchForm',
+		columns : [[
+			{field : 'name',title : '名称',width:260},
+			{field : 'contact',title : '联系人',width:100},
+			{field : 'mobile',title : '手机号',width:130},
+			{field : 'height',title : '业务员',width:130},
+			{field : 'isRecommend',title : '状态',width:130,
+				formatter : function(value,row,index){
+					if(row.isRecommend == 0){
+						return "待审核";
+					}else if(row.isRecommend == 1){
+						return "审核通过";
+					}else if(row.isRecommend == 2){
+						return "审核未通过";
+					}
+				}
+			},
+			{field : 'operate',title : '操作',width:390,
+				formatter : function(value, row, index) {
+					var url = outPutFunction("editShop",row.id,"编辑")+	outPutFunction("freezeShop",row.id,"删除");
+					if(row.isRecommend == 0 && $!{perUtils.hasPermission('vir','admin')}){
+						url += outPutFunction("doRecommend",row.id,"审核通过")+outPutFunction("notRecommend",row.id,"审核不通过");
+					}
+					if(row.isRecommend == 1 && $!{perUtils.hasPermission('vir','admin')}){
+						url += outPutFunction("giveAccount",row.id,"分配账号")+outPutFunction("checkAccount",row.id,"查看已分配账号");
+					}
+					return url;
+				}
+			} 
+		]]
+	});
+	
+	function checkAccount(id){
+		$("#manager_ifr").attr('src','/shop/user/tolist/'+id);
+		$("#editManager").window('open');
+	}
+	
+	function giveAccount(id){
+		$("#adminShopUserForm").form('clear');
+		$("#shopUserId").val(0);
+		$("#shopId").val(id);
+		$("#add_shop_user").window('open');
+	}
+
+	function addShop(){
+		$("#shop_ifr").attr('src','/shop/shop/input');
+		$("#add_shop").window('open');
+	}
+	
+	function editShop(uid) {
+		$("#shop_ifr").attr('src','/shop/shop/input?id='+uid);
+		$("#add_shop").window('open');
+	}
+
+	function freezeShop(uid) {
+		$.messager.confirm('店铺管理',"确定要删除吗?",function(r){
+		  if (r){   
+			jQuery.post("/shop/shop/delete/"+uid,{}, function(data) {
+				if(data == "success"){
+					$("#shopTable").treegrid('reload');
+				}else{
+					$.messager.alert('Info', "删除失败", 'info');
+				}
+			});
+		 }
+		})
+	}
+	
+	function doRecommend(id){
+		$.messager.confirm('店铺管理',"确定要审核通过吗?",function(r){
+		  if (r){   
+			jQuery.post("/shop/shop/doRecommend?value=1&id="+id,{}, function(data) {
+				if(data == "success"){
+					$("#shopTable").treegrid('reload');
+				}else{
+					$.messager.alert('Info', "审核失败", 'info');
+				}
+			});
+		 }
+		})
+	}
+	function notRecommend(id){
+		$.messager.confirm('店铺管理',"确定要审核不通过吗?",function(r){
+		  if (r){   
+			jQuery.post("/shop/shop/doRecommend?value=1&id="+id,{}, function(data) {
+				if(data == "success"){
+					$("#shopTable").treegrid('reload');
+				}else{
+					$.messager.alert('Info', "审核失败", 'info');
+				}
+			});
+		 }
+		})
+	}
+	
+	function doSubmit(){
+		$('#adminShopUserForm').form("submit",{
+			   success:function(data){
+			      $('#add_shop_user').window('close');
+			     if(data == 'success'){
+				    $("#shopUserTable").datagrid('reload'); 
+				    $(".easyui-validatebox").val('');
+				  }else{
+				 	$.messager.alert('Info', "添加失败,可能是用户名存在或曾经存在", 'info');
+				   }   
+			   }
+		});
+	}
+
+</script>
+

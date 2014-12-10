@@ -1,0 +1,256 @@
+<div style="margin:10px 0;"></div>
+
+<div id="serviceuserSearchForm" style="padding:5px;height:auto">
+	<div style="margin-bottom:5px">
+		<a href="#"  onclick="addserviceUser()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增用户</a>
+	</div>
+	<div>
+		<form id="queryserviceUserForm">
+			用户名:<input class="easyui-validatebox" name="filter_S_username" style="width:100px">
+			姓名:<input class="easyui-validatebox" name="filter_S_name" style="width:100px">
+			<a href="javascript:doSearchObject('serviceuserTable','queryserviceUserForm')" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
+		</form>
+	</div>
+</div>
+	
+<div id="servicemodifyPass" class="easyui-window" title="修改密码" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:330px;padding:10px;">
+	<div style="padding:10px 0 10px 60px">
+	   <form id="servicemodifyPassForm" method="post" action="/admin/user/modifyPass" enctype="multipart/form-data">
+	   <input  name="id" type="hidden"/>
+	    <table>
+			<tr>
+				<td>原密码:</td>
+				<td><input name="password" autoComplete="off" class="easyui-validatebox" type="password"  data-options="required:true,validType:'charOrDigit'"></input></td>
+			</tr>
+			<tr>
+				<td>新密码:</td>
+				<td><input name="new_password" autoComplete="off" class="easyui-validatebox" type="password"  data-options="required:true,validType:'charOrDigit'"></input></td>
+			</tr>
+			<tr>
+				<td>新密码确认:</td>
+				<td><input name="new_password_confirm" autoComplete="off" class="easyui-validatebox" type="password"  data-options="required:true,validType:'charOrDigit'"></input></td>
+			</tr>
+			<tr>
+	            <td>&nbsp;</td>
+	            <td>
+	            	<input type="button" value="提交" onclick="doModifyPass()"></input>
+	            	<input type="reset" value="重置" ></input>
+	            </td>
+	        </tr>
+		</table>
+	  </form>
+	</div>
+</div>
+
+<div id="add_egint" class="easyui-window" title="用户管理" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:630px;padding:10px;">
+	<div style="padding:10px 0 10px 60px">
+	   <form id="adminserviceUserForm" method="post" action="/shop/admin/user/simpleSave" enctype="multipart/form-data">
+	   <input  name="id" id="egintId" type="hidden" value="0"/>
+	   <input  name="orgId" id="orgId_" type="hidden" value="0"/>
+	   <input  name="bigLogo" type="hidden" />
+	    <table>
+			<tr>
+				<td style="width:130px">用户名:</td>
+				<td><input  name="username" autoComplete="off" class="easyui-validatebox" type="text"  data-options="required:true" ></input></td>
+			</tr>
+			<tr>
+				<td>姓名:</td>
+				<td><input name="name" autoComplete="off" class="easyui-validatebox" type="text"  data-options="required:true"></input></td>
+			</tr>
+			<tr>
+				<td>密码:</td>
+				<td><input name="password" autoComplete="off" class="easyui-validatebox" type="password"  data-options="required:true,validType:'charOrDigit'"></input></td>
+			</tr>
+			<tr>
+				<td>Email:</td>
+				<td><input name="enamil" autoComplete="off" class="easyui-validatebox" type="text"  data-options="required:true,validType:'email'"></input></td>
+			</tr>
+			<tr>
+				<td>手机号码:</td>
+				<td><input name="mobi" autoComplete="off" class="easyui-validatebox" type="text"  data-options="required:true"></input></td>
+			</tr>
+			<tr>
+				<td>头像:</td>
+				<td>
+					<input name="logos" type="file"  data-options="required:true"></input>
+				</td>
+			</tr>
+			<tr id="adminUserLogotr" style="display: none;">
+				<td>&nbsp;</td>
+				<td id="adminUserLogoSpan">
+				</td>
+			</tr>
+			<!-- <tr>
+				<td>选择城市</td>
+				<td>
+					<select id="adminprovinceId" name="provinceId"></select>
+					<select id="admindistrictId" name="districtId"></select>
+					<select id="admincityId" name="cityId"></select>
+				</td>
+			</tr>
+			 -->
+			<tr>
+				<td>生日:</td>
+				<td><input class="easyui-datebox" name="birthday" style="width:100px"></input></td>
+			</tr>
+			<tr>
+				<td>性别:</td>
+				<td>
+					<input name="sex" type="radio" value="1">男
+					<input name="sex" type="radio" value="2">女
+				</td>
+			</tr>
+			<tr>
+				<td>是否管理者:</td>
+				<td>
+					<input name="postId" value="0" type="radio">是
+					<input name="postId" value="1" type="radio">不是
+				</td>
+			</tr>
+			<tr>
+	            <td>&nbsp;</td>
+	            <td>
+	            	<input type="button" value="提交" onclick="doSubmit()"></input>
+	            	<input type="reset" value="重置" ></input>
+	            </td>
+	        </tr>
+		</table>
+	  </form>
+	</div>
+</div>
+ <table id="serviceuserTable" style="width:1150px"></table>
+<script>
+	$('#serviceuserTable').datagrid({   
+		url:'/shop/admin/user/list?filter_L_orgId='+orgId,   
+		toolbar: '#serviceuserSearchForm',
+		pagination:true,
+		singleSelect:true,
+		rownumbers:true,
+		autoRowHeight:true,
+		columns:[[   
+					{field:'username',title:'用户名',width:100},
+					{field:'name',title:'姓名',width:90},
+					{field:'mobi',title:'手机号',width:95},
+					{field:'deptName',title:'部门',width:190},
+					{field:'postId',title:'类型',width:190,
+						formatter:function(value,row,index){
+							if(row.postId==0){
+								return "管理员";
+							}else{
+								return "业务员";
+							}
+						}
+					},
+					{field:'operate',title:'操作',width:250,
+						formatter: function(value,row,index){
+							var retValue = outPutFunction("editServerUser",row.id,"编辑") + outPutFunction("modifyPass",row.id,"修改密码")+ outPutFunction("resetPass",row.id,"重置密码") + outPutFunction("freezeServerUser",row.id,"删除");
+
+							return retValue;
+						}
+					}
+				]]
+		});
+	function doSubmit(){
+		$('#adminserviceUserForm').form('submit',{
+			   success:function(data){
+			      $('#add_egint').window('close');
+			     if(data == 'success'){
+				    $("#serviceuserTable").datagrid('reload'); 
+				    $(".easyui-validatebox").val('');
+				  }else{
+				 	$.messager.alert('Info', "添加失败,可能是用户名存在或曾经存在", 'info');
+				   }   
+			   }
+		});
+	}
+	
+	function addUser(){
+		$("#adminserviceUserForm").form('clear');
+		$("#adminserviceUserForm input[name='userName'] ").attr("readonly",false);
+		$("#adminserviceUserForm input[name='postId'][value='1']").attr("checked",true);
+		$("#adminserviceUserForm input[name='sex'][value='1']").attr("checked",true);
+		$("#add_egint").window('open');
+		$("#egintId").val(0);
+		$("#orgId_").val(orgId);
+		$("#adminUserLogotr").hide();
+		$("#add_egint #adminUserForm tr:eq(1) ").show();
+	}
+	
+	
+	
+	function editServerUser(uid){
+		$.post("/admin/user/getUser/"+uid,function(data){
+			$("#adminserviceUserForm input[name='username'] ").attr("readonly",true);
+			$("#add_egint #adminserviceUserForm tr:eq(2) ").hide();
+			data.id=data.adminUser.id;
+			data.username=data.adminUser.username;
+			data.name=data.adminUser.name;
+			data.password=data.adminUser.password;
+			data.enamil=data.adminUser.enamil;
+			data.birthday=data.adminUser.birthday;
+			data.mobi=data.adminUser.mobi;
+			data.bigLogo=data.adminUser.bigLogo;
+			data.sex=data.adminUser.sex;
+			data.orgId=data.adminUser.orgId;
+			data.postId=data.adminUser.postId;
+			$('#add_egint').window('open');
+			$('#adminserviceUserForm').form('load',data);
+		});
+	}
+	
+	function modifyPass(uid){
+		$.get("/admin/user/getUser/"+uid,function(data){
+			$('#servicemodifyPass').window('open');
+			$('#servicemodifyPassForm').form('load',data);
+		});
+	}
+	
+	//重置密码
+	function resetPass(uid){
+		$.messager.confirm('用户管理',"确定要重置吗?",function(r){
+			if(r){
+				jQuery.post("/admin/user/modifyPass/",{id:uid},function(data){
+		    		if(data=='success'){
+						$("#serviceuserTable").datagrid('reload'); 
+						$.messager.alert('Info', "重置成功", 'info');
+					}else{
+						$.messager.alert('Info', "重置失败", 'info');			
+					}
+		    	});
+			}
+		});  	
+	}	
+	function freezeServerUser(uid){
+		$.messager.confirm('用户管理',"确定要删除吗?",function(r){
+			if(r){
+				jQuery.post("/admin/user/delete/"+uid,{},function(data){
+		    		if(data!='0'){
+						$("#serviceuserTable").datagrid('reload'); 
+					}else{
+						$.messager.alert('Info', "删除失败", 'info');			
+					}
+		    	});
+			}
+		});  	
+	}
+	
+	function doModifyPass(){
+		console.log($("input[name=new_password]").val());
+		console.log($("input[name=new_password_confirm]").val());
+		if($("input[name=new_password]").val() != $("input[name=new_password_confirm]").val()){
+			alert("两次输入密码不一致！");
+			return;
+		}
+		$('#servicemodifyPassForm').form("submit",{
+			   success:function(data){
+			      $('#servicemodifyPass').window('close');
+			     if(data == 'success'){
+			    	 alert('修改成功');
+				  }else{
+				 	$.messager.alert('Info', "修改失败", 'info');
+				   }   
+			   }
+		});
+	}
+	
+</script>

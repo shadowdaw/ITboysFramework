@@ -1,0 +1,98 @@
+#set( $layout = "/layout/common-layout.vm")
+<style type="text/css">
+.tabcs td{text-align: center;border:1px solid #DEDEDE;}
+</style>
+<div style="margin: 10px 0;"></div>
+<div>
+	<table id="relInfoTable" style="width:438px;border:1px solid #DFDFDF;" cellspacing="0" class="tabcs">
+		<tbody>
+			<tr class="datagrid-row">
+                    <td  style="width:50px;">
+						<input type="checkbox" onclick="checkedAll(this)" id="allttInfo"/>全选
+        			</td>
+            		<td >信息标题</td>
+                </tr>
+        	#foreach($relInfos in $!relInfos)
+            	<tr class="datagrid-row">
+                    <td >
+						<input type="checkbox" name="ttInfo" id="uu$!{relInfos.id}" value="$!{relInfos.id}" title="$!{relInfos.title}"  onclick="addCheck(this)"/>
+        			</td>
+            		<td style="display: table-cell;vertical-align: inherit">
+        					$!{relInfos.title}
+        			</td>
+                </tr>
+        	#end
+		</tbody>
+    </table>
+</div>
+<script >
+	//让已经关联的默认选中
+	var reluu =  document.getElementsByName('rel_proInfo');
+	for(var s=0;s<reluu.length;s++){
+		$("#uu"+reluu[s].value).attr("checked",true);
+	}
+
+	var addArr = new Array();
+	function addCheck(obj){
+		var isCheck = document.getElementById("uu"+obj.value).checked;
+		var ychecked = document.getElementsByName('rel_proInfo');//这些都是选中的
+		//先把选择过的放到数组中
+		for(var i=0;i<ychecked.length;i++){
+			var uu = jQuery.inArray(obj.value, addArr);
+			if(uu==-1){
+				addArr[addArr.length] = ychecked[i].value;
+			}
+		}
+		if(isCheck==true){
+			if(addArr.length==0){
+				addArr[addArr.length] = obj.value;
+				$('#relInfoDiv').append('<div class="menu-unselected" id="infoTitle'+obj.value+'"><input id='+obj.value+' name="rel_proInfo" type="checkbox"  value='+obj.value+'  checked="checked" onclick="deleteChecked(this)">'+obj.title+'</div>');
+        		parent.$("#prorelinfoButton").show();
+			}else{
+				var uu = jQuery.inArray(obj.value, addArr);
+				if(uu==-1){
+    				addArr[addArr.length] = obj.value;
+    				$('#relInfoDiv').append('<div class="menu-unselected" id="infoTitle'+obj.value+'"><input id='+obj.value+' name="rel_proInfo" type="checkbox"  value='+obj.value+'  checked="checked" onclick="deleteChecked(this)">'+obj.title+'</div>');
+            		parent.$("#prorelinfoButton").show();
+				}else{
+					alert("该信息已关联");
+				}
+			}
+		}else{
+			$("#infoTitle"+obj.value).remove();//取消关联的信息;
+			var uu = jQuery.inArray(obj.value, addArr);
+			if(uu==0){
+				addArr.splice(jQuery.inArray(obj.value,addArr),1);
+			}
+		}
+	}
+	
+	function checkedAll(obj){
+		var objChecked = obj.checked;
+		var chks = document.getElementsByName('ttInfo');
+		var ychecked = document.getElementsByName('rel_proInfo')//这些都是选中的
+		//先把选择过的放到数组中
+		for(var i=0;i<ychecked.length;i++){
+			addArr[addArr.length] = ychecked[i].value;
+		}
+		
+		if(objChecked==true){
+    		for(var i=0;i<chks.length;i++){
+        	 	chks[i].checked=true; 
+    			var rt = jQuery.inArray(chks[i].value, addArr);
+    			if(rt==-1){
+    				$('#relInfoDiv').append('<div class="menu-unselected" id="infoTitle'+chks[i].value+'"><input id='+chks[i].value+' name="rel_proInfo" type="checkbox"  value='+chks[i].value+'  checked="checked" onclick="deleteChecked(this)">'+chks[i].title+'</div>');
+            		parent.$("#prorelinfoButton").show();
+    			}
+    		}
+		}else{
+    		for(var i=0;i<chks.length;i++){
+            	chks[i].checked=false; 
+				$("#infoTitle"+chks[i].value).remove();//取消关联的信息
+				var val = chks[i].value;
+				addArr.splice(jQuery.inArray(val,addArr),1); 
+        	}
+		}
+	}
+</script>
+

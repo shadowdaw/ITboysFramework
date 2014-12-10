@@ -1,0 +1,256 @@
+<div style="margin: 10px 0;"></div>
+<div id="itemSearchForm" style="padding: 5px; height: auto">
+	<div style="margin-bottom: 5px">
+		<a href="#" onclick="javascript:addRootItem()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增栏目</a>
+	</div>
+</div>
+
+
+
+<div id="add_item" class="easyui-window" title="栏目管理" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width: 450px; height: 400px; padding: 10px;">
+	<div style="padding: 10px 0 10px 60px">
+		<form id="itemForm" method="post" enctype="multipart/form-data" action="/portal/item/save">
+			<input name="id" id="itemId"type="hidden" value="0"/>
+			<input name="parentId" type="hidden" id="itempId" value=""/>
+			<table>
+				<tr>
+	    			<td>栏目类型:</td>
+		    			<td>
+		    				<select name="isLeaf"   id="adminPortalIsLef"  onchange="doWithAdminPortalItemType(this.value)">
+		    					<option value="0">基本类目</option>
+		    					<option value="1">信息类目</option>
+		    				</select>
+		    				(信息类目才可以发文章)
+		    				<script>
+		    					function doWithAdminPortalItemType(val){
+		    						if(val=="1"){
+		    							$("#adminPortalItemTr").show();
+		    						}else{
+		    							$("#adminPortalItemTr").hide();
+		    						}
+		    					}
+		    				</script>
+		    			</td>
+	    		</tr>
+				<tr id="adminPortalItemTr"  style="display:none">
+	    			<td>信息发布类型:</td>
+		    			<td>
+		    				<select name="type"  id="adminportalItemType">
+		    					<option value="2">多篇文章</option>
+		    					<option value="1">单篇文章</option>
+		    					<option value="3">连接</option>
+		    				</select>
+		    			</td>
+	    		</tr>
+	    		<tr>
+	    			<td>栏目名称:</td>
+	    			<td><input class="easyui-validatebox" autoComplete="off" type="text" name="name" data-options="required:true"></input></td>
+	    		</tr>
+	    		<tr>
+	    			<td>栏目code:</td>
+	    			<td><input id="codes" class="easyui-validatebox" autoComplete="off" type="text" name="code" data-options="required:true"></input></td>
+	    		</tr>
+	    		<tr>
+	    			<td>接口链接:</td>
+	    			<td><input class="easyui-validatebox" autoComplete="off" type="text" name="url" ></input></td>
+	    		</tr>
+	    		<tr>
+	    			<td>栏目图片:</td>
+	    			<td>
+	    				<input  type="file" name="xyzz"  style="width:180px;"></input>
+	    			</td>
+	    		</tr>
+	    		<tr id="itemImagetr">
+					<td>&nbsp;</td>
+					<td id="itemImageSpan"></td>
+				</tr>
+	    		<tr>
+	    			<td>备注说明:</td>
+	    			<td>
+	    				<textarea name="desc"  style="width:230px;height:50px;"></textarea>
+	    			</td>
+	    		</tr>
+				<tr>
+					 <td>&nbsp;</td>
+	            	<td>
+	            		<input type="button" value="提交" onclick="doCheckAndSubItemForm()"></input>
+	            		<input type="reset" value="重置" ></input>
+	           		</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+
+<div id="portal_tag" class="easyui-window" title="标签管理" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:880px;height:550px;padding:10px;"></div>
+
+
+<table id="itemTable" style="width:1100px" class="easyui-treegrid"></table>
+
+<script>
+	
+	
+	
+	$('#itemTable').treegrid({   
+	    url:'/portal/item/list?sortField=id&sortOrder=asc',   
+	    idField:'id', 
+	    nowrap: false,
+        rownumbers: true,
+        animate:true,
+        collapsible:true,
+        fitColumns: true,
+   		autoRowHeight: false,
+	    treeField:'name',   
+	    toolbar: '#itemSearchForm',
+	    columns: [[
+					{field : 'name',title : '名称',width:250},
+					{field : 'type',title : '栏目类型',width:70,
+						formatter: function(value,row,index){
+							if(row.type==1){
+								return '单条信息';
+							}else if(row.type==2){
+								return '多条信息';
+							}else if(row.isLeaf==0){
+								return '基本栏目';
+							}else if(row.type==3){
+								return '连接';
+							}else{
+								return row.type
+							}
+						}
+					},
+					{field : 'url',title : '接口链接',width:180},
+					{field : 'desc',title : '说明',width:250},
+					{field : 'operate',title : '操作',width:300,
+						formatter : function(value, row, index) {			
+							if(row.isLeaf!=1){
+								return outPutFunction("editItem",row.id,"编辑")+outPutFunction("freezeItem",row.id,"删除")+'[<a href="javascript:addChild('+row.id+')">新增子栏目</a>]';
+							}else if(row.type==2){
+								if(row.isLeaf!=1){
+									return outPutFunction("editItem",row.id,"编辑")+outPutFunction("freezeItem",row.id,"删除")+'[<a href="javascript:addChild('+row.id+')">新增子栏目</a>]'+'[<a href="javascript:getTag('+row.id+')">标签管理</a>]';
+								}else{
+									return outPutFunction("editItem",row.id,"编辑")+outPutFunction("freezeItem",row.id,"删除")+'[<a href="javascript:getTag('+row.id+')">标签管理</a>]';
+								}
+							 }else{
+								return outPutFunction("editItem",row.id,"编辑")+outPutFunction("freezeItem",row.id,"删除");
+							}
+						}
+					} 
+				]]
+	});  
+	
+	function getTag(id){
+		$("#portal_tag").dialog({   
+			 title: '标签管理',   
+			 width: 880,  
+			 closed: false,   
+			 cache: false,   
+			 href: '/portaltag/tolist/'+id, 
+			 modal: true  
+		}); 
+	}
+	
+	
+	function addRootItem(){
+		$("#itemForm").form('clear');
+		$("#adminPortalIsLef").val(0);
+		$("#adminportalItemType").val(2);
+		$("#itemId").val(0);
+		$("#adminPortalItemTr").hide();
+		$("#adminPortalIsLef").attr("disabled",false);
+		$("#adminportalItemType").attr("disabled",false);
+		$("#codes").attr("disabled",false);
+		$('#add_item').window('open');
+		$("#itemImagetr").hide();
+	}
+
+	function addChild(oid){
+		$("#itemForm").form('clear');
+		$("#adminPortalIsLef").val(0);
+		$("#adminportalItemType").val(2);
+		$("#adminPortalItemTr").hide();
+		$("#itemId").val(0);
+		$("#adminPortalIsLef").attr("disabled",false);
+		$("#adminportalItemType").attr("disabled",false);
+		$("#codes").attr("disabled",false);
+		$('#add_item').window('open');
+		$("#itempId").val(oid);
+		$("#itemImagetr").hide();
+	}
+	
+	function editItem(uid) {
+		jQuery.get("/portal/item/getItem/"+uid, function(data) {
+			$("#codes").attr("readonly",true);
+			$('#add_item').window('open');
+			$("#itemForm").form('load',data);
+			if(data.isLeaf==1){
+				$("#adminPortalIsLef").attr("disabled",true);
+				$("#adminportalItemType").attr("disabled",true);
+				$("#adminPortalItemTr").show();
+			}else{
+				$("#adminPortalIsLef").attr("disabled",false);
+				$("#adminportalItemType").attr("disabled",false);
+			}
+			$("#itemImagetr").show();
+			if(data.image){
+				var ipth = img_path+data.image;
+				$("#itemImageSpan").html('<a href="'+ipth+'" target="_blank"><img src="'+ipth+'" width="80"/></a>');
+			}
+		});
+	}
+
+	function freezeItem(uid) {
+		jQuery.messager.confirm('栏目管理',"确定要删除吗?",function(r){
+			if(r){
+				jQuery.post("/portal/item/delete",{id:uid},function(data) {
+					if (data>=1) {
+						$("#itemTable").treegrid('reload');
+					} else {
+						$.messager.alert('Info', "删除失败", 'info');
+					}
+				});
+			}
+		});
+	}
+
+	function doCheckAndSubItemForm(){
+		var itemId = $('#itemForm input[name="id"]').val();
+		if(itemId==''){
+			var code = $("#codes").val();
+			jQuery.get("/portal/item/checkcode",{codes:code},function(data){
+				if(data>0){
+					$.messager.alert('Info', "该code已存在,请重新填写", 'info');
+					$("#codes").val('');
+				}else{
+					$('#itemForm').form("submit",{
+						success : function(data) {
+							if (data == 'success') {
+								$("#itemImagetr").hide();
+								$("#itemImageSpan").html('');
+								$('#add_item').window('close');
+								$("#itemTable").treegrid('reload');
+							} else {
+								jQuery.messager.alert('Info', "添加失败", 'info');
+							}
+						}
+					});
+				}
+			});
+		}else{
+			$('#itemForm').form("submit",{
+				success : function(data) {
+					if (data == 'success') {
+						$("#itemImagetr").hide();
+						$("#itemImageSpan").html('');
+						$('#add_item').window('close');
+						$("#itemTable").treegrid('reload');
+					} else {
+						jQuery.messager.alert('Info', "添加失败", 'info');
+					}
+				}
+			});
+		}
+	}
+	
+</script>
+

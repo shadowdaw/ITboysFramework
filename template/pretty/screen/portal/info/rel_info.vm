@@ -1,0 +1,78 @@
+<div class="easyui-layout" style="width:1020px;height:550px;">
+	<div data-options="region:'west',split:true" title="信息栏目" style="width:180px;height:550px;">
+		<ul id="infosTree" class="easyui-tree" 
+			data-options="animate:true,
+			checkbox:false,
+			onClick: function(node){
+					jQuery.get('/portal/item/getItem/'+node.id,{},function(data){
+					if(data.isLeaf==1){
+						 $('#portalInfos').panel('refresh', '/rel/info/toInfoList?objId=$!{objId}&type=$!{type}&itemId='+node.id);
+					}
+				});
+			}
+			">
+		</ul>
+
+	</div>
+	<div id="portalInfos" class="easyui-panel" data-options="region:'center'" title="信息管理" style="width:420px;height:550px;padding:10px;">
+		
+	</div>
+	   
+	<div data-options="region:'east',split:true" title="已关联信息" style="width:380px;height:650px;">
+		<input type="hidden" value="$!{objId}" id="objId"/>
+		<input type="hidden" value="$!{type}" id="rel_type"/>
+		<div id="relInfoDiv" >
+    		#foreach($relInfos in $!relInfos)
+    			<div class="menu-unselected" id="infoTitle$!{relInfos.id}"><input id="$!{relInfos.id}" type="checkbox" name="rel_proInfo" value="$!{relInfos.id}" checked="checked"  onclick="deleteChecked(this)">$!{relInfos.title}</div>
+    		#end
+		</div>
+		<a href="javascript:void(0)" id='prorelinfoButton'  #if("$!relInfos.size()"=="0")style="display:none;"#end class="easyui-linkbutton">确定</a> 
+	</div>
+	
+	<script>
+		$('#infosTree').tree({
+			url:'/portal/item/getTreeItem',
+			onlyLeafCheck:true
+		}); 
+		var type=$!{type};
+		var objId=$!{objId}
+	</script>
+	
+	<script >
+		function deleteChecked(obj){
+			var isChecked = document.getElementById(obj.value).checked;
+			if(isChecked==false){
+				$("#infoTitle"+obj.value).remove();//取消关联的信息
+				var relInfoIds = new Array();
+				var len =  document.getElementsByName("ttInfo");
+        		 for(var i=0;i<len.length;i++){
+        			if(len[i].value==obj.value && len[i].checked){//同时将左边的设置为不选中
+    					len[i].checked=false;
+						$("#allttInfo").checked=false;
+						addArr.splice(jQuery.inArray(len[i].value,addArr),1); 
+    				}
+        		}
+			}
+		}
+		
+		$("#prorelinfoButton").click(function(){
+			var str = document.getElementsByName("rel_proInfo");
+			var _objId = $("#objId").val();
+			var _type = $("#rel_type").val();
+			var s = '';
+    		for(var i=0; i<str.length; i++){
+    			if (s != '') s += ',';
+    				s += str[i].id;
+    		}
+    		jQuery.post("/rel/info/doRealInfo",{objId:_objId,infoIds:s,type:_type},function(data){
+    			if(data=='success'){
+    				jQuery.messager.alert('Info', "成功", 'info');
+					$("#mailwindowdiv").dialog('close');
+    			}else{
+    				jQuery.messager.alert('Info', "失败", 'info');
+    			}
+    		});
+		})
+    </script>
+</div>
+
