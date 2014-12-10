@@ -1,0 +1,81 @@
+@charset "utf-8";
+/*引导页了__*/
+body {
+	margin:0;
+	padding:0;
+	font-size:12px;
+	line-height:24px;
+	max-width:1280px;
+	margin:0 auto;
+	background:#edeef3;
+}
+div, p, ul, img, li, form, input, textarea, select {
+	padding:0;
+	margin:0;
+}
+img {
+	border:0;
+}
+ul {
+	list-style:none;
+}
+a:link, a:visited {
+	color:#454545;
+	text-decoration:none;
+	font-family:Arial, Helvetica, sans-serif;
+}
+a:hover {
+	color:#000;
+	text-decoration:underline;
+}
+.t1 a:link,.t1 a:visited {
+	color:#2d8f41;
+	font-weight:normal;
+	text-decoration:none;
+	font-family:Arial, Helvetica, sans-serif;
+}
+.t1 a:hover {
+	color:#2d8f41;
+	text-decoration:underline;
+}
+
+/* 登录 */
+
+.nr_login {
+	width:1200px;
+	margin:0 auto;
+	height:577px;
+	padding-bottom:21px;
+	margin-top:28px;
+	color:#8d8c8c;
+	background: url(../images/qy_1.jpg) no-repeat 0 0;
+}
+.top_login {
+	width:959px;
+	height:55px;
+	padding-top:12px;
+}
+.longin {
+	padding-left:595px;
+	padding-top:294px;
+}
+.longin td {
+	font-size:12px;
+	height:43px;
+	vertical-align:top;
+}
+.longin .jl td {
+	font-size:12px;
+	height:32px;
+	vertical-align:top;
+}
+.longin .jl td img {
+	padding-top:4px;
+}
+.inp1 {
+	width:150px;
+	height:20px;
+	padding-top:4px;
+	padding-left:3px;
+	border:none;
+}
